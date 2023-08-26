@@ -1,0 +1,47 @@
+[
+  {
+    "_id": "5e478dc845ebc028fa7f2395",
+    "name": "Phuong Minh",
+    "email": "phuong1@gmail.com",
+    "password": "123456",
+    "role": "seller",
+    "gender": "male",
+    "dob": "1999-02-16"
+  },
+  {
+    "_id": "5e4799e34768833202cb9904",
+    "name": "John Doe",
+    "email": "johndoe@gmail.com",
+    "password": "123456",
+    "role": "user",
+    "gender": "male",
+    "dob": "1995-06-11"
+  },
+  {
+    "_id": "5e479a8ea1576a341c7f7800",
+    "name": "Admin",
+    "email": "admin@gmail.com",
+    "password": "123456",
+    "role": "user",
+    "gender": "male",
+    "dob": "2000-01-01"
+  },
+  {
+    "_id": "5e479ad1874448347b55c2c1",
+    "name": "Jane Doe",
+    "email": "janedoe@gmail.com",
+    "password": "123456",
+    "role": "user",
+    "gender": "female",
+    "dob": "2002-03-11"
+  },
+  {
+    "_id": "5e479b23df94eb34c43a0ca8",
+    "name": "Seller1",
+    "email": "seller1@gmail.com",
+    "password": "123456",
+    "role": "seller",
+    "gender": "female",
+    "dob": "1992-12-24"
+  }
+]

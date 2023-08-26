@@ -1,0 +1,48 @@
+[
+  {
+    "_id": "5e48f8970bedbc0e99c44f02",
+    "name": "HyperX Pulsefire Raid - Gaming Mouse",
+    "category": ["accessories", "books-gifts"],
+    "price": "59.99",
+    "description": "11 Programmable Buttons, RGB, Ergonomic Design, Comfortable Side Grips, Software-Controlled Customization",
+    "dimension": "11 x 5.2 x 11 inches",
+    "weight": "50g",
+    "specs": "Connection Type: Wired, Buttons: 11, Max Speed: 450IPS",
+    "branch": "HyperX",
+    "origin": "US",
+    "discount": 10,
+    "colors": ["Black&Red", "Blacka&Green", "Black&Blue"],
+    "shop": "5e4406dfe67ba2619654062e",
+    "user": "5e479b23df94eb34c43a0ca8"
+  },
+  {
+    "_id": "5e48f8970bedbc0e99c44f01",
+    "name": "LYLYFAN 12 Pcs Babys Breath Artificial Flowers",
+    "category": "books-gifts",
+    "price": "14.5",
+    "description": "Real touch feeling.Flower head is silica gel,plastic stem, white gypsophila flowers.",
+    "dimension": "14.9 x 8.5 x 3.5 inches",
+    "weight": "9.1 ounces",
+    "specs": "Item model number: 6251511, ASIN: B07CNVQGV7",
+    "branch": "LYLYFAN",
+    "origin": "JP",
+    "colors": ["White", "Pink", "Red"],
+    "shop": "5e43bbee02bb1f2c76dcf8bf",
+    "user": "5e478dc845ebc028fa7f2395"
+  },
+  {
+    "_id": "5e48f8970bedbc0e99c44f03",
+    "name": "New Product by Phuong",
+    "category": "books-gifts",
+    "price": "14.5",
+    "description": "Real touch feeling.Flower head is silica gel,plastic stem, white gypsophila flowers.",
+    "dimension": "14.9 x 8.5 x 3.5 inches",
+    "weight": "9.1 ounces",
+    "specs": "Item model number: 6251511, ASIN: B07CNVQGV7",
+    "branch": "LYLYFAN",
+    "origin": "JP",
+    "colors": ["White", "Pink", "Red"],
+    "shop": "5e4406dfe67ba2619654062e",
+    "user": "5e479b23df94eb34c43a0ca8"
+  }
+]

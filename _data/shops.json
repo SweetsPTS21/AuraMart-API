@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "5e43bbee02bb1f2c76dcf8bf",
+    "user": "5e478dc845ebc028fa7f2395",
+    "name": "Phuong flower shop",
+    "description": "A flower shop for you",
+    "phone": "1234567890",
+    "address": "Hanoi, Vietnam",
+    "createdAt": "2020-02-12T08:48:46.842Z"
+  },
+  {
+    "_id": "5e4406dfe67ba2619654062e",
+    "user": "5e479b23df94eb34c43a0ca8",
+    "name": "Computer store",
+    "description": "A computer hardwares store",
+    "phone": "1234567890",
+    "address": "Hai Phong, Vietnam",
+    "createdAt": "2020-02-12T14:08:31.697Z"
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "title": "The quality is awesome!",
+    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec viverra feugiat mauris id viverra. Duis luctus ex sed facilisis ultrices.",
+    "rating": "4",
+    "product": "5e48f8970bedbc0e99c44f02",
+    "user": "5e4799e34768833202cb9904"
+  },
+  {
+    "title": "Shipping service is very fast!",
+    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec viverra feugiat mauris id viverra. Duis luctus ex sed facilisis ultrices.",
+    "rating": "5",
+    "product": "5e48f8970bedbc0e99c44f01",
+    "user": "5e479ad1874448347b55c2c1"
+  }
+]

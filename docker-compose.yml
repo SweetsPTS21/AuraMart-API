@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  app:
+    image: phuongminh2303/tiki-api:v1
+    volumes: 
+      - ./:/app
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - PORT=${PORT}
+    ports:
+      - "${PORT}:${PORT}"
+    restart: unless-stopped
+    depends_on:
+      - redis
+  
+  redis:
+    image: redis:5-alpine
+    volumes:
+      - .docker/data/redis:/data
+    restart: unless-stopped
+  

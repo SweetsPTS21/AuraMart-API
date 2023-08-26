@@ -1,0 +1,302 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Madrid}      
+  \usecolortheme{beaver} 
+  \usefonttheme{serif} 
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[utf8x]{inputenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+\setbeamertemplate{itemize items}[circle]
+\lstset
+{
+    language=[LaTeX]TeX,
+    breaklines=true,
+    basicstyle=\tt\scriptsize,
+    keywordstyle=\color{blue},
+    identifierstyle=\color{magenta},
+}
+
+\title[Tiki clone]{Web Application Development}
+\author{Group 2}
+\subtitle{Project presentation: Tiki clone}
+\institute{ICT dept/USTH}
+\date{March 28, 2020}
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{Motivation}
+	\begin{itemize}
+  		\item Tiki.vn is a popular and favorite commercial website in Vietnam.
+  		\item Tiki's system architecture is complicated.
+  		\begin{itemize}
+			\item Most of the time, they can handle a huge amount of requests in their server.
+			\item They can scale both horizontally and vertically very fast
+			\item They use modern technologies/frameworks: ReactJS for example.
+		\end{itemize}
+  		\item Tiki only supports Vietnamese. But Tiki-clone version will support English.
+	\end{itemize}
+\end{frame}
+
+\section{System Architecture}
+
+\begin{frame}{Use case design and analysis}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.35]{images/usecase.png}
+    \caption{Use case diagram}
+    \label{fig:usecase}
+\end{figure}
+\end{frame}
+
+\begin{frame}{System architecture design}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.2]{images/usecase.png}
+    \caption{System architecture}
+    \label{fig:sysarch}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Role-based access control design}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.4]{images/rolebase.png}
+    \caption{Role-based access control}
+    \label{fig:sysarch}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Database design}
+\begin{figure}[htp]
+    \centering
+    \includegraphics[scale=0.38]{images/database_diagram.png}
+    \caption{Role-based access control}
+    \label{fig:sysarch}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Tools and frameworks}
+    \begin{columns}
+    \linespread{1.0}
+    \hspace{-1cm}
+    \begin{column}{5cm}
+        \textbf{Front-end:}
+        \begin{itemize}
+            \item ReactJS with Redux
+            \item Material UI
+        \end{itemize}
+        \textbf{Back-end: }
+        \begin{itemize}
+            \item NodeJS with Express
+            \item MongoDB Atlas
+            \item Redis
+        \end{itemize}
+        \textbf{Server: }
+        \begin{itemize}
+            \item Google Cloud CE
+            \item Nginx
+            \item Docker (A little bit)
+        \end{itemize}
+    \end{column}
+    
+    \hspace{-1cm}
+    \begin{column}{5cm}
+        \includegraphics[scale=0.43]{images/techstack.png}  
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\section{Code Implementation}
+	
+\begin{frame}{Code Implementation}
+Sample ReactJS and Redux "Login" implementation
+\end{frame}
+
+\begin{frame}{Code Implementation: Schema implementation}
+    \begin{columns}
+    \hspace{-0.5cm}
+    \vspace{-2cm}
+    \begin{column}{4cm}
+    \textbf{Each model has:}
+    \begin{itemize}
+        \item Model schema
+        \item Middlewares
+    \end{itemize}
+    \end{column}
+    
+    \begin{column}{6cm}
+    \includegraphics[scale=0.45]{images/schema.png}
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Code Implementation: 3-layers architecture}
+\begin{columns}
+    \linespread{1.0}
+    \hspace{-1cm}
+     \begin{column}{5cm}
+        \begin{figure}[htp]
+            \centering
+            \includegraphics[scale=0.5]{images/3_layer_architecture.png}
+            \caption{3-layers architecture in NodeJS with Express}
+            \label{fig:sysarch}
+        \end{figure}  
+    \end{column}
+    \hspace{-1cm}
+    \begin{column}{5cm}
+        \includegraphics[scale=0.5]{images/3layerscode.png}
+    \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Server-side caching and Load balancing}
+\begin{columns}
+    \hspace{-2cm}
+     \begin{column}{6cm}
+        \linespread{1.3}
+        \begin{itemize}
+             \item Cahing
+            \begin{itemize}
+                \item Redis-cli v4.0.9
+                \item Cache \textbf{GET} query only
+                \item Implemented as middlewares
+                \item Result: (no-cache vs cache)
+                \includegraphics[scale=0.5]{images/no-cache.png}
+                \includegraphics[scale=0.5]{images/with-cache.png}
+            \end{itemize}
+            \item Load balancing:
+            \begin{itemize}
+                \item Nginx v1.17.0
+                \item \textbf{ip-hash} algorithm
+            \end{itemize}
+        \end{itemize}  
+    \end{column}
+    \hspace{-1.5cm}
+    \begin{column}{4cm}
+        \includegraphics[scale=0.5]{images/cache_strategy.png}
+    \end{column}
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Security}
+\begin{itemize}
+	\item	Encrypt user's passwords and tokens
+	\item	Protect against NoSQL injections
+	\item	Use helmet package to prevent cross site scripting (XSS)
+	\item	Add rate limit (100 requests/ 10 mins) (maybe change later)
+	\item	Prevent HTTP param polution
+	\item	Public the API with CORS
+	\end{itemize}
+\end{frame}
+
+\section{Results and Discussion}
+
+\begin{frame}{Results}
+	\begin{itemize}
+    	\item Tiki-clone web-based application
+    	\begin{itemize}
+    	    \item Single web page application
+    	    \item Responsive with pc screen and tablet!
+    	\end{itemize}
+    	\item Well constructed JSON-based API and documentations
+    	\begin{itemize}
+    	    \item Scalable
+    	    \item Quite security (at the moment)
+    	\end{itemize}
+        \item Web server architecture that can handle multiple requests
+        \item Finish all use cases in the design part
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Result images here}
+    Images here
+\end{frame} 
+    
+\begin{frame}[fragile]
+\frametitle{Difficulties and problems}
+    \begin{itemize}
+    	\item Interrupted class timetable and schedule due to the disease
+    	\item Medium/low technical skills with tools and frameworks
+        \item Free tier Google Cloud server is not strong enough
+        \item Bad team management from the leader
+	\end{itemize}
+\end{frame}    
+
+\begin{frame}[fragile]
+\frametitle{Future improvements}
+    \begin{itemize}
+    	\item Add Google/Facebook/Zalo OAuth 2.0
+    	\item Implement slug string for better url
+    	\item Server: 
+    	    \begin{itemize}
+    	        \item Add more WS and LB
+    	        \item Implement Distributed filesystem
+    	        \item Transfer to microservices
+    	        \item Containerize the system
+    	    \end{itemize}
+        \item Add domain name and encrypt SSL
+        \item Implement CD/CI 
+        \item Resolve our issues that are noted in Github repos
+	\end{itemize}
+\end{frame}
+
+\section{Demo and Q\&A}
+
+\begin{frame}{Demo and Q\&A}
+    \begin{itemize}
+	    \item Tiki-clone on Heroku: 
+	    \url{heroku app link}
+	    \item Front-end repository: \url{https://github.com/phuongminh2303/Tiki-Clone}
+	    \item Back-end repository: \url{https://github.com/phuongminh2303/Tiki-Clone-API}
+	    \item API documentation: \url{https://documenter.getpostman.com/view/9718206/SzKN2hcs}
+	\end{itemize}
+\end{frame}
+	
+\begin{frame}{Thank you for listening!}
+    \textbf{Group 2:}
+    \begin{itemize}
+        \item Dinh Nhu Minh Phuong - BI8-141
+        \item Praise Oketola - BI8-137
+        \item Truong Quoc Khanh - BI8-
+        \item Nguyen Trong Son - BI8-
+        \item Nguyen Huu Chi Dat - BI8-
+        \item Pham Viet Minh Duc - BI8-
+    \end{itemize}
+\end{frame}
+\end{document}

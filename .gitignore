@@ -1,0 +1,10 @@
+node_modules/
+.env
+.idea
+config/config.env
+.docker
+.vscode
+.dockerignore
+Dockerfile
+howtorun.txt
+
