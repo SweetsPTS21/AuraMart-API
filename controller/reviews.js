@@ -26,6 +26,7 @@ const getProductReviews = asyncHandler(async (req, res, next) => {
     select: 'name'
   });
 
+  // Cache the result in Redis for 1 hour to improve performance
   redis_client.setex(
     `reviews_product:${productId}`,
     3600,
