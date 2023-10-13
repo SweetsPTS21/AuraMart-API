@@ -88,11 +88,11 @@ const addOrder = asyncHandler(async (req, res, next) => {
     //   );
     // }
 
-    //const order = await Order.create(req.body);
+    const order = await Order.create(req.body);
 
     res.status(201).json({
         success: true,
-        data: "OKE",
+        data: order,
     });
 });
 
