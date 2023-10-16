@@ -26,6 +26,8 @@ router
     .get(getUserAddress)
     .post(protect, authorize("user", "admin"), addAddress);
 
-router.route("/:userId/shop").get(getUserShop);
+router
+    .route("/:userId/shop")
+    .get(protect, authorize("admin", "seller"), getUserShop);
 
 module.exports = router;
