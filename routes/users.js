@@ -13,7 +13,7 @@ const addressRouter = require("./address");
 
 const { protect, authorize } = require("../middleware/auth");
 const { getUserAddress, addAddress } = require("../controller/address");
-
+const { getUserShop } = require("../controller/shops");
 router.use(protect);
 // router.use(authorize("admin", "user"));
 
@@ -25,5 +25,7 @@ router
     .route("/:userId/address")
     .get(getUserAddress)
     .post(protect, authorize("user", "admin"), addAddress);
+
+router.route("/:userId/shop").get(getUserShop);
 
 module.exports = router;

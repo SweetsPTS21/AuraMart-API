@@ -20,6 +20,10 @@ const ShopSchema = new mongoose.Schema(
                 "Description cannot be longer than 500 characters",
             ],
         },
+        avatar: {
+            type: String,
+            default: "no-photo.jpg",
+        },
         phone: {
             type: String,
             maxlength: [20, "Phone number cannot be longer than 20 characters"],

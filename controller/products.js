@@ -45,13 +45,13 @@ const getProductsOfShops = asyncHandler(async (req, res, next) => {
 const getProduct = asyncHandler(async (req, res, next) => {
   const product = await Product.findById(req.params.id).populate({
     path: 'shop',
-    select: 'name description'
+    select: 'name description avatar'
   });
 
   if (!product) {
     return next(
       new ErrorResponse(`No product found with the id ${req.params.id}`, 404)
-    );
+    );s
   }
 
   redis_client.setex(

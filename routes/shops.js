@@ -54,7 +54,7 @@ router
 
 router
     .route("/:shopId/configs")
-    .get(protect, authorize("seller", "admin"), getShopConfigs)
+    .get(getShopConfigs)
     .post(protect, authorize("seller", "admin"), addShopConfig);
 
 router

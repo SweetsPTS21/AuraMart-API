@@ -60,7 +60,13 @@ const updateShopConfig = asyncHandler(async (req, res, next) => {
             401
         );
     }
+    //change all other shop's config using to false
+    await ShopConfig.updateMany(
+        { shop: req.params.shopId },
+        { $set: { using: false } }
+    );
 
+    //update using config id
     shopConfig = await ShopConfig.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,

@@ -16,6 +16,10 @@ const ShopConfigSchema = new mongoose.Schema(
         vouchers: {
             type: [String],
         },
+        using: {
+            type: Boolean,
+            default: false,
+        },
         shop: {
             type: mongoose.Schema.ObjectId,
             ref: "Shop",
