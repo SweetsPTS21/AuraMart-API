@@ -15,10 +15,18 @@ const {
     deleteShopConfig,
 } = require("../controller/configs");
 
+const {
+    getShopVoucher,
+    addShopVoucher,
+    updateShopVoucher,
+    deleteShopVoucher,
+} = require("../controller/voucher");
+
 const { getProductsOfShops, addProduct } = require("../controller/products");
 
 const advancedResults = require("../middleware/advancedResults");
 const Shop = require("../models/Shop");
+const Voucher = require("../models/Voucher");
 
 const { protect, authorize } = require("../middleware/auth");
 
@@ -35,7 +43,7 @@ router.use("/:shopId/stats", statRouter);
 
 router
     .route("/")
-    .get(advancedResults(Shop, "products"), getShops)
+    .get(advancedResults(Shop, ["products", "vouchers"]), getShops)
     .post(protect, authorize("seller", "admin"), createShop);
 
 router
@@ -61,5 +69,15 @@ router
     .route("/:shopId/configs/:id")
     .put(protect, authorize("seller", "admin"), updateShopConfig)
     .delete(protect, authorize("seller", "admin"), deleteShopConfig);
+
+router
+    .route("/:shopId/vouchers")
+    .get(getShopVoucher)
+    .post(protect, authorize("seller", "admin"), addShopVoucher);
+
+router
+    .route("/:shopId/vouchers/:id")
+    .put(protect, authorize("seller", "admin"), updateShopVoucher)
+    .delete(protect, authorize("seller", "admin"), deleteShopVoucher);
 
 module.exports = router;

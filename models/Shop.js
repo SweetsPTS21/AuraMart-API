@@ -66,7 +66,21 @@ ShopSchema.pre("remove", async function (next) {
     next();
 });
 
-// Reverse populate with virtuals
+// Cascade delete vouchers when a shop is deleted
+ShopSchema.pre("remove", async function (next) {
+    console.log(`Vouchers is being removed from shop ${this._id}`);
+    await this.model("Voucher").deleteMany({ shop: this._id });
+    next();
+});
+
+// Cascade delete shop configs when a shop is deleted
+ShopSchema.pre("remove", async function (next) {
+    console.log(`Shop Configs is being removed from shop ${this._id}`);
+    await this.model("ShopConfig").deleteMany({ shop: this._id });
+    next();
+});
+
+// // Reverse populate with virtuals
 ShopSchema.virtual("products", {
     ref: "Product",
     localField: "_id",
@@ -75,8 +89,16 @@ ShopSchema.virtual("products", {
 });
 
 // Reverse populate with virtuals
-ShopSchema.virtual("shopConfigs", {
+ShopSchema.virtual("shopconfigs", {
     ref: "ShopConfig",
+    localField: "_id",
+    foreignField: "shop",
+    justOne: false,
+});
+
+// Reverse populate with virtuals
+ShopSchema.virtual("vouchers", {
+    ref: "Voucher",
     localField: "_id",
     foreignField: "shop",
     justOne: false,

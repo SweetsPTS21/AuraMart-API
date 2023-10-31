@@ -76,6 +76,7 @@ const orders = require("./routes/orders");
 const stats = require("./routes/stats");
 const address = require("./routes/address");
 const configs = require("./routes/configs");
+const vouchers = require("./routes/vouchers");
 app.use("/api/v1/shops", shops);
 app.use("/api/v1/products", products);
 app.use("/api/v1/auth", auth);
@@ -85,6 +86,7 @@ app.use("/api/v1/orders", orders);
 app.use("/api/v1/stats", stats);
 app.use("/api/v1/address", address);
 app.use("/api/v1/configs", configs);
+app.use("/api/v1/vouchers", vouchers);
 
 // Error handler middleware
 app.use(errorHandler);

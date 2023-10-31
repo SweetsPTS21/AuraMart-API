@@ -53,7 +53,7 @@ const updateShopConfig = asyncHandler(async (req, res, next) => {
     // Make sure user is shopConfig owner
     if (
         shopConfig.user.toString() !== req.user.id &&
-        req.user.role !== "admin"
+        (req.user.role !== "admin" || req.user.role !== "seller")
     ) {
         return next(
             new ErrorResponse(`Not authorized to update shopConfig`),
