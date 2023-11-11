@@ -8,3 +8,6 @@ config/config.env
 Dockerfile
 howtorun.txt
 
+
+# Local Netlify folder
+.netlify
