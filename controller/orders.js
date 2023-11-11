@@ -109,7 +109,7 @@ const updateOrder = asyncHandler(async (req, res, next) => {
     }
 
     // Check ownership of the order
-    if (order.user.toString() !== req.user.id && req.user.role !== "admin") {
+    if (order.user.toString() !== req.user.id && req.user.role === "user") {
         return next(
             new ErrorResponse(`This user cannot update this order`, 401)
         );
@@ -139,7 +139,7 @@ const deleteOrder = asyncHandler(async (req, res, next) => {
     }
 
     // Check ownership of the order
-    if (order.user.toString() !== req.user.id && req.user.role !== "admin") {
+    if (order.user.toString() !== req.user.id && req.user.role === "user") {
         return next(
             new ErrorResponse(`This user cannot delete this order`, 401)
         );

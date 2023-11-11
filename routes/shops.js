@@ -22,6 +22,16 @@ const {
     deleteShopVoucher,
 } = require("../controller/voucher");
 
+const {
+    getShopStocks,
+    getStock,
+    createStock,
+    updateStock,
+    deleteStock,
+} = require("../controller/stocks");
+
+const Stock = require("../models/Stock");
+
 const { getProductsOfShops, addProduct } = require("../controller/products");
 
 const advancedResults = require("../middleware/advancedResults");
@@ -48,10 +58,7 @@ router
 
 router
     .route("/:shopId/products")
-    .get(checkCachedShopProducts, getProductsOfShops);
-
-router
-    .route("/:shopId/products")
+    .get(checkCachedShopProducts, getProductsOfShops)
     .post(protect, authorize("seller", "admin"), addProduct);
 
 router
@@ -79,5 +86,22 @@ router
     .route("/:shopId/vouchers/:id")
     .put(protect, authorize("seller", "admin"), updateShopVoucher)
     .delete(protect, authorize("seller", "admin"), deleteShopVoucher);
+
+router
+    .route("/:shopId/stocks")
+    .get(
+        advancedResults(Stock, {
+            path: "products",
+            select: "name price",
+        }),
+        getShopStocks,
+    )
+    .post(protect, authorize("admin", "seller"), createStock);
+
+router
+    .route("/:shopId/stocks/:id")
+    .get(getStock)
+    .put(protect, authorize("admin", "seller"), updateStock)
+    .delete(protect, authorize("admin", "seller"), deleteStock);
 
 module.exports = router;

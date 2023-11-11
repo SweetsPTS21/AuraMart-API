@@ -39,7 +39,7 @@ router
 router
   .route('/:productId/reviews')
   .get(getProductReviews)
-  .post(protect, authorize('user', 'admin'), addReview);
+  .post(protect, authorize('user', 'admin', 'seller'), addReview);
 
 router
   .route('/:id')

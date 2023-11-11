@@ -93,7 +93,7 @@ const updateAddress = asyncHandler(async (req, res, next) => {
         );
     }
 
-    // Check ownership of the review
+    // Check ownership of the address
     if (address.user.toString() !== req.user.id && req.user.role !== "admin") {
         return next(
             new ErrorResponse(`This user cannot update this address`, 401)

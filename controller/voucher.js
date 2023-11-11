@@ -47,9 +47,22 @@ const getVoucherByCode = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/users/:userId/vouchers
 // @access  Private
 const getUserVoucher = asyncHandler(async (req, res, next) => {
-    const userVoucher = await UserVoucher.find({ user: req.params.userId });
+    const userVoucher = await UserVoucher.find({ user: req.params.userId }).populate({
+        path: "vouchers",
+        select: "code discount expiryDate minimumSpend maximumDiscount",
+    });
 
-    res.status(200).json(res.advancedResults);
+    if (!userVoucher) {
+        return next(
+            new ErrorResponse(`No voucher found with user id ${req.params.userId}`, 404)
+        );
+    }
+
+    res.status(200).json({
+        success: true,
+        count: userVoucher.length,
+        data: userVoucher,
+    });
 });
 
 // @desc    Check owner of voucher

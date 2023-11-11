@@ -26,9 +26,9 @@ router.route('/history').get(protect, authorize('user', 'admin'), getUserOrders)
 router
   .route('/:id')
   .get(getOrder)
-  .put(protect, authorize('user', 'admin'), updateOrder)
-  .delete(protect, authorize('user', 'admin'), deleteOrder);
+  .put(protect, authorize('user', 'seller', 'admin'), updateOrder)
+  .delete(protect, authorize('user','seller', 'admin'), deleteOrder);
 
-router.route('/checkout').post(protect, authorize('user', 'admin'), addOrder);
+router.route('/checkout').post(protect, authorize('user', 'seller', 'admin'), addOrder);
 
 module.exports = router;

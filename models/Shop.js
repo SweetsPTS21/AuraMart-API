@@ -41,11 +41,6 @@ const ShopSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
-        shopConfig: {
-            type: mongoose.Schema.ObjectId,
-            ref: "ShopConfig",
-            required: true,
-        },
     },
     {
         toJSON: { virtuals: true },
@@ -99,6 +94,14 @@ ShopSchema.virtual("shopconfigs", {
 // Reverse populate with virtuals
 ShopSchema.virtual("vouchers", {
     ref: "Voucher",
+    localField: "_id",
+    foreignField: "shop",
+    justOne: false,
+});
+
+// Reverse populate with virtuals
+ShopSchema.virtual("stocks", {
+    ref: "Stock",
     localField: "_id",
     foreignField: "shop",
     justOne: false,
