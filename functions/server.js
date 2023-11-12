@@ -13,9 +13,11 @@ const xss = require("xss-clean");
 const fileupload = require("express-fileupload");
 const path = require("path");
 var favicon = require("serve-favicon");
+const serverless = require("serverless-http");
+const netlify_path = "/.netlify";
 
 // Load env variables
-dotenv.config({ path: "./config/config.env" });
+dotenv.config({ path: "../config/config.env" });
 
 // Connect to database
 connectDB();
@@ -78,17 +80,17 @@ const address = require("../routes/address");
 const configs = require("../routes/configs");
 const vouchers = require("../routes/vouchers");
 const stocks = require("../routes/stocks");
-app.use("/api/v1/shops", shops);
-app.use("/api/v1/products", products);
-app.use("/api/v1/auth", auth);
-app.use("/api/v1/users", users);
-app.use("/api/v1/reviews", reviews);
-app.use("/api/v1/orders", orders);
-app.use("/api/v1/stats", stats);
-app.use("/api/v1/address", address);
-app.use("/api/v1/configs", configs);
-app.use("/api/v1/vouchers", vouchers);
-app.use("/api/v1/stocks", stocks);
+app.use(`${netlify_path}/api/v1/shops`, shops);
+app.use(`${netlify_path}/api/v1/products`, products);
+app.use(`${netlify_path}/api/v1/auth`, auth);
+app.use(`${netlify_path}/api/v1/users`, users);
+app.use(`${netlify_path}/api/v1/reviews`, reviews);
+app.use(`${netlify_path}/api/v1/orders`, orders);
+app.use(`${netlify_path}/api/v1/stats`, stats);
+app.use(`${netlify_path}/api/v1/address`, address);
+app.use(`${netlify_path}/api/v1/configs`, configs);
+app.use(`${netlify_path}/api/v1/vouchers`, vouchers);
+app.use(`${netlify_path}/api/v1/stocks`, stocks);
 // Error handler middleware
 app.use(errorHandler);
 
@@ -118,3 +120,5 @@ process.on("unhandledRejection", (err, promise) => {
     // Close server and exit
     server.close(() => process.exit(1));
 });
+
+module.exports.handler = serverless(app);

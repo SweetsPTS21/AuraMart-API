@@ -1,0 +1,11 @@
+services:
+    - name: tiki-api
+      env:
+          - key: REDIS_HOST
+            fromDatabase:
+                name: auramart-redis
+                property: host
+          - key: REDIS_PORT
+            fromDatabase:
+                name: auramart-redis
+                property: port
