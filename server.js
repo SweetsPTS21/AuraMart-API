@@ -37,6 +37,14 @@ app.use(helmet());
 // prevent xss attacks
 app.use(xss());
 
+// Serve static files from the 'build' directory
+app.use(express.static(path.join(__dirname, "build")));
+
+// Serve 'index.html' for any route
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
 // Rate limit 100 requests per 10 mins
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000,
