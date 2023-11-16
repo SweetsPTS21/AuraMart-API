@@ -5,6 +5,7 @@ const {
     createUser,
     updateUser,
     deleteUser,
+    createBulkUsers,
 } = require("../controller/users");
 
 const { getUserVoucher, addUserVoucher, checkOwnerVoucher } = require("../controller/voucher");
@@ -21,6 +22,8 @@ router.use(protect);
 // router.use(authorize("admin", "user"));
 
 router.route("/").get(advancedResults(User), getUsers).post(createUser);
+
+router.route("/bulk").post(createBulkUsers);
 
 router.route("/:id").get(getUser).put(updateUser).delete(deleteUser);
 

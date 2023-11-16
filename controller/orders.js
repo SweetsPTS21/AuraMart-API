@@ -114,7 +114,7 @@ const updateOrder = asyncHandler(async (req, res, next) => {
             new ErrorResponse(`This user cannot update this order`, 401)
         );
     }
-
+    console.log(req.body);
     order = await Order.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,

@@ -37,13 +37,13 @@ app.use(helmet());
 // prevent xss attacks
 app.use(xss());
 
-// Serve static files from the 'build' directory
-app.use(express.static(path.join(__dirname, "build")));
+// // Serve static files from the 'build' directory
+// app.use(express.static(path.join(__dirname, "build")));
 
-// Serve 'index.html' for any route
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "build", "index.html"));
-});
+// // Serve 'index.html' for any route
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "build", "index.html"));
+// });
 
 // Rate limit 100 requests per 10 mins
 const limiter = rateLimit({
@@ -86,6 +86,8 @@ const address = require("./routes/address");
 const configs = require("./routes/configs");
 const vouchers = require("./routes/vouchers");
 const stocks = require("./routes/stocks");
+const recommend = require("./routes/recommend");
+const payment = require("./routes/payment");
 app.use("/api/v1/shops", shops);
 app.use("/api/v1/products", products);
 app.use("/api/v1/auth", auth);
@@ -97,6 +99,8 @@ app.use("/api/v1/address", address);
 app.use("/api/v1/configs", configs);
 app.use("/api/v1/vouchers", vouchers);
 app.use("/api/v1/stocks", stocks);
+app.use("/api/v1/recommend", recommend);
+app.use("/api/v1/payment", payment);
 // Error handler middleware
 app.use(errorHandler);
 

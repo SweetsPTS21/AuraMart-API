@@ -1,70 +1,94 @@
-const User = require('../models/User');
-const ErrorResponse = require('../utils/errorResponse');
-const asyncHandler = require('../middleware/async');
+const User = require("../models/User");
+const ErrorResponse = require("../utils/errorResponse");
+const asyncHandler = require("../middleware/async");
 
 // @desc    Get all users
 // @route   GET /api/v1/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res, next) => {
-  res.status(200).json(res.advancedResults);
+    const users = res.advancedResults;
+    // let usersData = [];
+    // users.data.forEach((user) => {
+    //     usersData.push(user._id);
+    // });
+    res.status(200).json(users);
 });
 
 // @desc    Get single user
 // @route   GET /api/v1/users/:id
 // @access  Private/Admin
 const getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id);
 
-  res.status(200).json({
-    success: true,
-    data: user
-  });
+    res.status(200).json({
+        success: true,
+        data: user,
+    });
 });
 
 // @desc    Create user
 // @route   POST /api/v1/users
 // @access  Private/Admin
 const createUser = asyncHandler(async (req, res, next) => {
-  const user = await User.create(req.body);
+    const user = await User.create(req.body);
 
-  res.status(201).json({
-    success: true,
-    data: user
-  });
+    res.status(201).json({
+        success: true,
+        data: user,
+    });
+});
+
+// @desc Create large amount of users
+// @route POST /api/v1/users/bulk
+// @access Private/Admin
+const createBulkUsers = asyncHandler(async (req, res, next) => {
+    const users = await User.insertMany(req.body);
+
+    res.status(201).json({
+        success: true,
+        data: users,
+    });
 });
 
 // @desc    Update user
 // @route   PUT /api/v1/users/:id
 // @access  Private/Admin
 const updateUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id).select('+password');
+    const user = await User.findById(req.params.id).select("+password");
 
-  user.password = req.body.newPassword || user.password;
-  user.name = req.body.newName;
-  user.role = req.body.newRole;
-  user.address = req.body.newAddress;
-  user.phone = req.body.newPhone;
-  user.gender = req.body.newGender;
-  user.dob = req.body.newDob;
+    user.password = req.body.newPassword || user.password;
+    user.name = req.body.newName;
+    user.role = req.body.newRole;
+    user.address = req.body.newAddress;
+    user.phone = req.body.newPhone;
+    user.gender = req.body.newGender;
+    user.dob = req.body.newDob;
 
-  await user.save();
+    await user.save();
 
-  res.status(200).json({
-    success: true,
-    data: user
-  });
+    res.status(200).json({
+        success: true,
+        data: user,
+    });
 });
 
 // @desc    Delete user
 // @route   DELETE /api/v1/users/:id
 // @access  Private/Admin
 const deleteUser = asyncHandler(async (req, res, next) => {
-  await User.findByIdAndDelete(req.params.id);
+    await User.findByIdAndDelete(req.params.id);
 
-  res.status(200).json({
-    success: true,
-    data: {}
-  });
+    res.status(200).json({
+        success: true,
+        data: {},
+    });
 });
 
-module.exports = { getUsers, getUser, createUser, updateUser, deleteUser };
+module.exports = {
+    getUsers,
+    getUser,
+    createUser,
+    updateUser,
+    deleteUser,
+    createBulkUsers,
+};

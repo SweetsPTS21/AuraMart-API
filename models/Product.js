@@ -72,6 +72,10 @@ const ProductSchema = new mongoose.Schema(
             type: Date,
             default: Date.now,
         },
+        quantity: {
+            type: Number,
+            min: [0, "Quantity cannot be lower than 0"],
+        },
         soldQuantity: {
             type: Number,
             min: [0, "Quantity cannot be lower than 0"],
@@ -81,11 +85,11 @@ const ProductSchema = new mongoose.Schema(
             ref: "Shop",
             required: true,
         },
-        stock: {
-            type: mongoose.Schema.ObjectId,
-            ref: "Stock",
-            required: true,
-        },
+        // stock: {
+        //     type: mongoose.Schema.ObjectId,
+        //     ref: "Stock",
+        //     required: true,
+        // },
         user: {
             type: mongoose.Schema.ObjectId,
             ref: "User",
