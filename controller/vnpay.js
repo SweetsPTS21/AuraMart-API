@@ -80,7 +80,6 @@ const vnpayCreatePayment = asyncHandler(async (req, res, next) => {
     });
 });
 
-
 // @desc    Vnpay return
 // @route   GET /api/v1/payment/vnpay/vnpay_return
 // @access  Public
@@ -151,26 +150,26 @@ const vnpayIpn = asyncHandler(async (req, res, next) => {
     let hmac = crypto.createHmac("sha512", secretKey);
     let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
 
-    let paymentStatus = "0"; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
+    const vnpay = await Vnpay.findOne({ vnp_TxnRef: orderId });
+    const orderData = await Order.findById(vnpay.orderId);
+
+    let paymentStatus = orderData.paymentState; // Giả sử 'Pending' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
     //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
     //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
 
-    let checkOrderId = true; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
-    let checkAmount = true; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
-    let order = "0";
+    let checkOrderId = vnpay.vnp_TxnRef ? true : false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
+    let checkAmount = vnpay.vnp_Amount ? true : false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
 
     if (secureHash === signed) {
         //kiểm tra checksum
         if (checkOrderId) {
             if (checkAmount) {
-                if (paymentStatus == "0") {
+                if (paymentStatus == "Pending") {
                     //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
-                    const vnpay = await Vnpay.findOne({ vnp_TxnRef: orderId });
-                    order = vnpay.orderId;
 
                     if (rspCode == "00") {
                         //thanh cong
-                        paymentStatus = "1";
+                        paymentStatus = "Paid";
 
                         // Cap nhat lai trang thai giao dich
                         vnpay.vnp_ResponseCode = rspCode;
@@ -184,48 +183,48 @@ const vnpayIpn = asyncHandler(async (req, res, next) => {
                         vnpay.save();
 
                         // Cap nhat trang thai don hang thanh cong
-                        await Order.findByIdAndUpdate(order, {
-                            paymentState: "Paid",
+                        await Order.findByIdAndUpdate(vnpay.orderId, {
+                            paymentState: paymentStatus,
                         });
 
                         // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
                         res.status(200).json({
-                            RspCode: "00",
-                            Message: "Success",
+                            rspcode: "00",
+                            message: "Success",
                         });
                     } else {
                         //that bai
-                        paymentStatus = "2";
+                        paymentStatus = "Failed";
 
                         // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
                         // Cap nhat trang thai don hang that bai
-                        await Order.findByIdAndUpdate(order, {
-                            paymentState: "Failed",
+                        await Order.findByIdAndUpdate(vnpay.orderId, {
+                            paymentState: paymentStatus,
                         });
 
                         res.status(200).json({
-                            RspCode: "03",
-                            Message: "Fail to update order status",
+                            rspcode: "03",
+                            message: "Fail to update order status",
                         });
                     }
                 } else {
                     res.status(200).json({
-                        RspCode: "02",
-                        Message:
+                        rspcode: "02",
+                        message:
                             "This order has been updated to the payment status",
                     });
                 }
             } else {
                 res.status(200).json({
-                    RspCode: "04",
-                    Message: "Amount invalid",
+                    rspcode: "04",
+                    message: "Amount invalid",
                 });
             }
         } else {
-            res.status(200).json({ RspCode: "01", Message: "Order not found" });
+            res.status(200).json({ rspcode: "01", message: "Order not found" });
         }
     } else {
-        res.status(200).json({ RspCode: "97", Message: "Checksum failed" });
+        res.status(200).json({ rspcode: "97", message: "Checksum failed" });
     }
 });
 

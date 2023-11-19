@@ -7,6 +7,8 @@ const {
     vnpayReturn,
 } = require("../controller/vnpay");
 
+const { momoCreatePayment, momoIpn } = require("../controller/momo");
+
 const { protect, authorize } = require("../middleware/auth");
 
 router
@@ -25,5 +27,13 @@ router
 router
     .route("/vnpay/refund")
     .get(protect, authorize("user", "seller", "admin"), vnpayRefund);
+
+router
+    .route("/momo/create")
+    .post(protect, authorize("user", "seller", "admin"), momoCreatePayment);
+
+router
+    .route("/momo/momo_ipn")
+    .get(protect, authorize("user", "seller", "admin"), momoIpn);
 
 module.exports = router;

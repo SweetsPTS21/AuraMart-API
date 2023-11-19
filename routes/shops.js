@@ -4,6 +4,7 @@ const {
     getShops,
     getShop,
     createShop,
+    registerShop,
     updateShop,
     deleteShop,
 } = require("../controller/shops");
@@ -56,6 +57,8 @@ router
     .get(advancedResults(Shop, ["products", "vouchers"]), getShops)
     .post(protect, authorize("seller", "admin"), createShop);
 
+router.route("/register").post(protect, registerShop);
+
 router
     .route("/:shopId/products")
     .get(checkCachedShopProducts, getProductsOfShops)
@@ -94,7 +97,7 @@ router
             path: "products",
             select: "name price",
         }),
-        getShopStocks,
+        getShopStocks
     )
     .post(protect, authorize("admin", "seller"), createStock);
 

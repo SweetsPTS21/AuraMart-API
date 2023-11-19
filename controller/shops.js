@@ -1,4 +1,5 @@
 const Shop = require("../models/Shop");
+const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 
@@ -74,6 +75,45 @@ const createShop = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @dest Register shop for user
+// @route POST /api/v1/shops/register
+// @access Private (admin, user)
+const registerShop = asyncHandler(async (req, res, next) => {
+    // Add user to req.body
+    req.body.user = req.user.id;
+
+    // Check for existedShop
+    const existedShop = await Shop.findOne({ user: req.user.id });
+
+    // If the user is not an admin, they can create only 1 shop
+    if (existedShop && req.user.role !== "admin") {
+        return next(
+            new ErrorResponse(
+                `The seller with id ${req.user.id} has already created a shop`,
+                400
+            )
+        );
+    }
+
+    const shop = await Shop.create(req.body);
+
+    // Change user role to seller
+    const user = await User.findByIdAndUpdate(
+        req.user.id,
+        { role: "seller" },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+
+    res.status(201).json({
+        success: true,
+        data: shop,
+        newRole: user.role,
+    });
+});
+
 // @desc    Update shop
 // @route   PUT /api/v1/shops/:id
 // @access  Private
@@ -140,6 +180,7 @@ module.exports = {
     getShop,
     getUserShop,
     createShop,
+    registerShop,
     updateShop,
     deleteShop,
 };

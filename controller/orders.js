@@ -32,7 +32,7 @@ const getUserOrders = asyncHandler(async (req, res, next) => {
     let orders = await Order.find({ user: req.params.userId })
         .populate({
             path: "product shop",
-            select: "name",
+            select: "name slug photo price discount",
         })
         .sort("-" + sortBy)
         .limit(limit);

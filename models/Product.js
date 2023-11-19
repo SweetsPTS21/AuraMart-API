@@ -126,4 +126,12 @@ ProductSchema.virtual("reviews", {
     justOne: false,
 });
 
+// Reverse populate with virtuals in order
+ProductSchema.virtual("orders", {
+    ref: "Order",
+    localField: "_id",
+    foreignField: "product",
+    justOne: false,
+});
+
 module.exports = mongoose.model("Product", ProductSchema);

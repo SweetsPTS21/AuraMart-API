@@ -3,6 +3,9 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const sendMail = require("../utils/sendEmail");
 const crypto = require("crypto");
+const axios = require("axios");
+
+const chatEngineKey = process.env.CHAT_ENGINE_PRIVATE_KEY;
 
 const sendTokenResponse = (user, statusCode, res) => {
     // Generate token
@@ -41,7 +44,31 @@ const register = asyncHandler(async (req, res, next) => {
         dob,
     });
 
-    sendTokenResponse(user, 200, res);
+    // Create chat engine account
+    const first_name = name.split(" ")[0] || name;
+    const last_name = name.split(" ")[1] || "";
+    const username = email;
+    const secret = user._id;
+
+
+    // Store a user-copy on Chat Engine!
+    // Docs at rest.chatengine.io
+    try {
+        const r = await axios.post(
+            "https://api.chatengine.io/users/",
+            { username, secret, email, first_name, last_name },
+            { headers: { "Private-Key": chatEngineKey } }
+        );
+        const data = {
+            status: r.status,
+            data: r.data,
+            message: "User created on Chat Engine",
+        }
+        console.log(data);
+        sendTokenResponse(user, 200, res);
+    } catch (e) {
+        return res.status(e.response.status).json(e.response.data);
+    }
 });
 
 // @desc    Login user
