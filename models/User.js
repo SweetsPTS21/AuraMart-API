@@ -40,6 +40,10 @@ const UserSchema = new mongoose.Schema({
     dob: {
         type: Date,
     },
+    avatar: {
+        type: String,
+        default: "no-photo.jpg",
+    },
     age: Number,
     resetPasswordToken: String,
     resetPasswordExpire: Date,

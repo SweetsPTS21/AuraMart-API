@@ -2,6 +2,10 @@ const Product = require("../models/Product");
 const Shop = require("../models/Shop");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
+
+const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
+const storage = require("../config/firebaseConfig");
+
 const path = require("path");
 const url = require("url");
 const redis = require("redis");
@@ -21,11 +25,6 @@ const getProducts = asyncHandler(async (req, res, next) => {
         process.env.CACHE_EXPIRE,
         JSON.stringify(res.advancedResults)
     );
-    // const products = res.advancedResults;
-    // const productsData = [];
-    // products.data.forEach((product) => {
-    //     productsData.push(product._id);
-    // });
     res.status(200).json(res.advancedResults);
 });
 
@@ -129,7 +128,7 @@ const addProduct = asyncHandler(async (req, res, next) => {
 // @access  Private
 const updateProduct = asyncHandler(async (req, res, next) => {
     let product = await Product.findById(req.params.id);
-
+    let shop = await Shop.findOne({ user: req.user.id });
     if (!product) {
         return next(
             new ErrorResponse(`No product found with id ${req.params.id}`, 404)
@@ -137,10 +136,14 @@ const updateProduct = asyncHandler(async (req, res, next) => {
     }
 
     // Make sure that the owner is correct
-    if (product.user.toString() !== req.user.id && req.user.role !== "admin") {
+    if (
+        product.shop.toString() !== shop._id &&
+        req.user.role !== "admin" &&
+        req.user.role !== "seller"
+    ) {
         return next(
             new ErrorResponse(
-                `User ${req.user.id} cannot update product to this shop ${product._id}`,
+                `User ${req.user.id} cannot update product to this shop ${product.shop}`,
                 401
             )
         );
@@ -153,7 +156,7 @@ const updateProduct = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        data: product,
+        data: req.body,
     });
 });
 
@@ -162,7 +165,7 @@ const updateProduct = asyncHandler(async (req, res, next) => {
 // @access  Private
 const deleteProduct = asyncHandler(async (req, res, next) => {
     const product = await Product.findById(req.params.id);
-
+    let shop = await Shop.findOne({ user: req.user.id });
     if (!product) {
         return next(
             new ErrorResponse(`No product found with id ${req.params.id}`, 404)
@@ -170,7 +173,11 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
     }
 
     // Make sure that the owner is correct
-    if (product.user.toString() !== req.user.id && req.user.role !== "admin") {
+    if (
+        product.shop.toString() !== shop._id &&
+        req.user.role !== "admin" &&
+        req.user.role !== "seller"
+    ) {
         return next(
             new ErrorResponse(
                 `User ${req.user.id} cannot update product to this shop ${product._id}`,
@@ -192,13 +199,18 @@ const deleteProduct = asyncHandler(async (req, res, next) => {
 // @access  Private
 const productPhotoUpload = asyncHandler(async (req, res, next) => {
     const product = await Product.findById(req.params.id);
+    let shop = await Shop.findOne({ user: req.user.id });
 
     if (!product) {
         return res.status(400).json({ success: false });
     }
 
     // Make sure user is shop owner
-    if (product.user.toString() !== req.user.id && req.user.role !== "admin") {
+    if (
+        product.shop.toString() !== shop._id &&
+        req.user.role !== "admin" &&
+        req.user.role !== "seller"
+    ) {
         return next(
             new ErrorResponse(
                 `User ${req.params.id} cannot update this product`
@@ -213,6 +225,8 @@ const productPhotoUpload = asyncHandler(async (req, res, next) => {
 
     const file = req.files.file;
 
+    console.log(file);
+
     // Make sure the image is a photo
     if (!file.mimetype.startsWith("image")) {
         return next(
@@ -226,25 +240,47 @@ const productPhotoUpload = asyncHandler(async (req, res, next) => {
     // Check file size
     if (file.size > process.env.MAX_FILE_UPLOAD) {
         return next(
-            new ErrorResponse(`The file size cannot be larger than 1MB!`, 404)
+            new ErrorResponse(`The file size cannot be larger than 3MB!`, 404)
         );
     }
 
     // Change the name of the photo so that it is not duplicated
     file.name = `photo_${product._id}${path.parse(file.name).ext}`;
 
-    file.mv(`${process.env.FILE_UPLOAD_PATH2}/${file.name}`, async (err) => {
-        if (err) {
-            console.error(err);
-            return next(new ErrorResponse(`Problem with file upload`, 500));
-        }
-        await Product.findByIdAndUpdate(req.params.id, { photo: file.name });
+    // file.mv(`${process.env.FILE_UPLOAD_PATH2}/${file.name}`, async (err) => {
+    //     if (err) {
+    //         console.error(err);
+    //         return next(new ErrorResponse(`Problem with file upload`, 500));
+    //     }
+    //     await Product.findByIdAndUpdate(req.params.id, { photo: file.name });
+
+    //     res.status(200).json({
+    //         success: true,
+    //         data: file.name,
+    //     });
+    // });
+
+    const storageRef = ref(
+        storage,
+        `images/products/${product._id}/photo_${path.parse(file.name).ext}`
+    );
+
+    try {
+        const snapshot = await uploadBytes(storageRef, file);
+
+        const url = await getDownloadURL(snapshot.ref);
 
         res.status(200).json({
             success: true,
             data: file.name,
+            url: url,
         });
-    });
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        return next(new ErrorResponse(`Problem with file upload`, 500));
+    } finally {
+        // setTimeout(msg, 1);
+    }
 });
 
 module.exports = {
