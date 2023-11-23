@@ -21,6 +21,9 @@ const OrderSchema = new mongoose.Schema(
             type: String,
             required: [true, "Please add a phone number"],
         },
+        receiver: {
+            type: String,
+        },
         total: {
             type: Number,
             required: [true, "Please add total price"],

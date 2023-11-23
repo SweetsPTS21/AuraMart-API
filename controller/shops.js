@@ -114,6 +114,52 @@ const registerShop = asyncHandler(async (req, res, next) => {
     });
 });
 
+
+// @desc    Approve shop
+// @route   PUT /api/v1/shops/:shopId/approve
+// @access  Private
+const approveShop = asyncHandler(async (req, res, next) => {
+    const shopId = req.params.shopId;
+    const shop = await Shop.findById(shopId);
+
+    if (!shop) {
+        return next(
+            new ErrorResponse(`Shop not found with id ${shopId}`, 404)
+        );
+    }
+
+    // Make sure the user is shop owner
+    if (shop.user.toString() !== req.user.id && req.user.role !== "admin") {
+        return next(
+            new ErrorResponse(
+                `User ${req.user.id} cannot update this shop`,
+                401
+            )
+        );
+    }
+
+    // check if shop is already approved
+    if (shop.status === "active") {
+        return next(
+            new ErrorResponse(`Shop ${shopId} is already approved`, 400)
+        );
+    }
+
+    await Shop.findByIdAndUpdate(
+        shopId,
+        { status: "active" },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+
+    res.status(200).json({
+        success: true,
+        shopStatus: "active",
+    });
+});
+
 // @desc    Update shop
 // @route   PUT /api/v1/shops/:id
 // @access  Private
@@ -181,6 +227,7 @@ module.exports = {
     getUserShop,
     createShop,
     registerShop,
+    approveShop,
     updateShop,
     deleteShop,
 };

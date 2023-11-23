@@ -5,6 +5,7 @@ const {
     getShop,
     createShop,
     registerShop,
+    approveShop,
     updateShop,
     deleteShop,
 } = require("../controller/shops");
@@ -63,6 +64,8 @@ router
     .route("/:shopId/products")
     .get(checkCachedShopProducts, getProductsOfShops)
     .post(protect, authorize("seller", "admin"), addProduct);
+
+router.route("/:shopId/approve").put(protect, authorize("admin"), approveShop);
 
 router
     .route("/:id")

@@ -32,6 +32,11 @@ const ShopSchema = new mongoose.Schema(
             type: String,
             required: [true, "Please add an address"],
         },
+        status: {
+            type: String,
+            enum: ["pending", "active", "inactive"],
+            default: "pending",
+        },
         createdAt: {
             type: Date,
             default: Date.now,
