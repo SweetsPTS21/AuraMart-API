@@ -85,11 +85,10 @@ const ProductSchema = new mongoose.Schema(
             ref: "Shop",
             required: true,
         },
-        // stock: {
-        //     type: mongoose.Schema.ObjectId,
-        //     ref: "Stock",
-        //     required: true,
-        // },
+        sale: {
+            type: Boolean,
+            default: false,
+        },
         user: {
             type: mongoose.Schema.ObjectId,
             ref: "User",

@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const Shop = require("../models/Shop");
+const SaleProduct = require("../models/SaleProduct");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 
@@ -160,6 +161,88 @@ const updateProduct = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @dest   Set sale product
+// @route  PUT /api/v1/shops/:shopId/products/:id
+// @access Private
+const setSaleProduct = asyncHandler(async (req, res, next) => {
+    const { shopId, id } = req.params;
+    const { sale, discount, quantity, soldQuantity, beginAt, endIn } = req.body;
+
+    const shop = await Shop.findById(shopId);
+
+    if (!shop) {
+        return next(new ErrorResponse(`No shop with the id of ${shopId}`, 404));
+    }
+
+    // Make sure that the shop owner is correct
+    if (shop.user.toString() !== req.user.id && req.user.role !== "user") {
+        return next(
+            new ErrorResponse(
+                `User ${req.user.id} is not the owner of shop ${shop._id}`,
+                401
+            )
+        );
+    }
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+        return next(
+            new ErrorResponse(`No product found with id ${req.params.id}`, 404)
+        );
+    }
+
+    // Make sure that the product owner is correct
+    if (product.shop.toString() !== shopId) {
+        return next(
+            new ErrorResponse(
+                `User ${req.user.id} cannot update product to this shop ${shop._id}`,
+                401
+            )
+        );
+    }
+
+    // set sale status for product
+    product.sale = sale;
+    await product.save();
+
+    // find sale product by product id
+    const saleProduct = await SaleProduct.findOne({ product: id });
+
+    // create sale product if not exist
+    if (!saleProduct) {
+        const newSale = await SaleProduct.create({
+            product: id,
+            sale,
+            discount,
+            quantity,
+            soldQuantity,
+            beginAt,
+            endIn,
+            user: req.user.id,
+            shop: shopId,
+        });
+        return res.status(201).json({
+            success: true,
+            data: newSale,
+        });
+    }
+
+    saleProduct.sale = sale;
+    saleProduct.discount = discount;
+    saleProduct.beginAt = beginAt;
+    saleProduct.endIn = endIn;
+    saleProduct.quantity = quantity;
+    saleProduct.soldQuantity = soldQuantity;
+
+    await saleProduct.save();
+
+    res.status(200).json({
+        success: true,
+        data: saleProduct,
+    });
+});
+
 // @desc    Delete product
 // @route   DELETE /api/v1/products/:id
 // @access  Private
@@ -289,6 +372,7 @@ module.exports = {
     getProduct,
     addProduct,
     updateProduct,
+    setSaleProduct,
     deleteProduct,
     productPhotoUpload,
 };

@@ -10,6 +10,7 @@ const {
     deleteShop,
 } = require("../controller/shops");
 
+const { setSaleProduct } = require("../controller/products");
 const {
     getShopConfigs,
     addShopConfig,
@@ -64,6 +65,10 @@ router
     .route("/:shopId/products")
     .get(checkCachedShopProducts, getProductsOfShops)
     .post(protect, authorize("seller", "admin"), addProduct);
+
+router
+    .route("/:shopId/products/:id")
+    .put(protect, authorize("seller", "admin"), setSaleProduct);
 
 router.route("/:shopId/approve").put(protect, authorize("admin"), approveShop);
 
