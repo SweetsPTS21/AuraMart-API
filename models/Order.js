@@ -50,6 +50,7 @@ const OrderSchema = new mongoose.Schema(
                 "Packing",
                 "Shipping",
                 "Delivered",
+                "Received",
                 "Cancelled",
             ],
             default: "Ordered Successfully",

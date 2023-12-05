@@ -7,6 +7,7 @@ const {
     updateOrder,
     deleteOrder,
     cancelOrder,
+    confirmReceivedOrder,
 } = require("../controller/orders");
 
 const advancedResults = require("../middleware/advancedResults");
@@ -35,6 +36,10 @@ router
 router
     .route("/:id/cancel")
     .put(protect, authorize("user", "seller", "admin"), cancelOrder);
+
+router
+    .route("/:id/confirm")
+    .put(protect, authorize("user", "seller", "admin"), confirmReceivedOrder);
 
 router
     .route("/checkout")

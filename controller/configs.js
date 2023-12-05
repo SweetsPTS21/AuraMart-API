@@ -29,6 +29,21 @@ const addShopConfig = asyncHandler(async (req, res, next) => {
     req.body.shop = req.params.shopId;
     req.body.user = req.user.id;
 
+    // Make sure user is admin or seller
+    if (
+        (req.user.role !== "admin" || req.user.role !== "seller")
+    ) {
+        return next(
+            new ErrorResponse(`Not authorized to update shopConfig`),
+            401
+        );
+    }
+    //change all other shop's config using to false
+    await ShopConfig.updateMany(
+        { shop: req.params.shopId },
+        { $set: { using: false } }
+    );
+
     const shopConfig = await ShopConfig.create(req.body);
 
     res.status(201).json({

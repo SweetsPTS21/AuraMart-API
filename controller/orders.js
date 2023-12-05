@@ -114,7 +114,6 @@ const updateOrder = asyncHandler(async (req, res, next) => {
             new ErrorResponse(`This user cannot update this order`, 401)
         );
     }
-    console.log(req.body);
     order = await Order.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,
@@ -192,6 +191,45 @@ const cancelOrder = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @desc    Confirm received order
+// @route   PUT /api/v1/orders/:id/confirm
+// @access  Private
+const confirmReceivedOrder = asyncHandler(async (req, res, next) => {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+        return next(
+            new ErrorResponse(`No order found with id ${req.params.id}`, 404)
+        );
+    }
+
+    // Check ownership of the order
+    if (order.user.toString() !== req.user.id) {
+        return next(
+            new ErrorResponse(`This user cannot confirm this order`, 401)
+        );
+    }
+
+    // Check if order is in the right state
+    if (order.currentState !== "Delivered") {
+        return next(
+            new ErrorResponse(
+                `Cannot confirm order with current state ${order.currentState}`,
+                401
+            )
+        );
+    }
+
+    order.currentState = "Received";
+
+    await order.save();
+
+    res.status(200).json({
+        success: true,
+        data: order,
+    });
+});
+
 module.exports = {
     getOrders,
     getUserOrders,
@@ -200,4 +238,5 @@ module.exports = {
     updateOrder,
     deleteOrder,
     cancelOrder,
+    confirmReceivedOrder,
 };
