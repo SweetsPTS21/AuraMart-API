@@ -42,6 +42,28 @@ const getProductReviews = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @dest   Get all user reviews
+// @route  GET /api/v1/users/:userId/reviews
+// @access Private
+const getUserReviews = asyncHandler(async (req, res, next) => {
+    const { userId } = req.params;
+    const reviews = await Review.find({ user: userId })
+        .populate({
+            path: "product",
+            select: "name photo",
+        })
+        .populate({
+            path: "user",
+            select: "name",
+        });
+
+    return res.status(200).json({
+        success: true,
+        total: reviews.length,
+        data: reviews,
+    });
+});
+
 // @desc    Get single review
 // @route   GET /api/v1/reviews/:id
 // @access  Public
@@ -185,6 +207,7 @@ const deleteReview = asyncHandler(async (req, res, next) => {
 module.exports = {
     getReviews,
     getProductReviews,
+    getUserReviews,
     getReview,
     addReview,
     updateReview,

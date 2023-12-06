@@ -3,9 +3,8 @@ const { getTopSoldProduct, getTopSoldOfShop } = require('../controller/stats');
 
 const { protect, authorize } = require('../middleware/auth');
 
-router.use(protect);
 
-router.route('/').get(authorize("admin"), getTopSoldOfShop);
+router.route('/').get(protect, authorize("admin"), getTopSoldOfShop);
 router.route('/products').get(getTopSoldProduct);
 
 module.exports = router;

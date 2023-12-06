@@ -14,6 +14,8 @@ const {
     checkOwnerVoucher,
 } = require("../controller/voucher");
 
+const { getUserReviews } = require("../controller/reviews");
+
 const { getUserOrders } = require("../controller/orders");
 
 const User = require("../models/User");
@@ -45,9 +47,7 @@ router
     .get(getUserAddress)
     .post(protect, authorize("user", "admin"), addAddress);
 
-router
-    .route("/:userId/orders")
-    .get(getUserOrders);
+router.route("/:userId/orders").get(getUserOrders);
 
 router
     .route("/:userId/shop")
@@ -61,5 +61,7 @@ router
     .route("/:userId/vouchers/:id")
     .get(checkOwnerVoucher)
     .post(protect, authorize("user", "admin"), addUserVoucher);
+
+router.route("/:userId/reviews").get(protect, getUserReviews);
 
 module.exports = router;
