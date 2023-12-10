@@ -5,6 +5,8 @@ const StockProductSchema = new mongoose.Schema(
     {
         quantity: {
             type: Number,
+            min: [0, "Quantity cannot be lower than 0"],
+            default: 0,
             required: [true, "Please add a quantity"],
         },
         product: {

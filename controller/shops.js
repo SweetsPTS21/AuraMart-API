@@ -2,6 +2,9 @@ const Shop = require("../models/Shop");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
+const axios = require("axios");
+const ghnToken = process.env.GHN_TOKEN;
+const ghnUrl = process.env.GHN_URL;
 
 // @desc    Get all shops
 // @route   GET /api/v1/shops
@@ -95,8 +98,6 @@ const registerShop = asyncHandler(async (req, res, next) => {
         );
     }
 
-    const shop = await Shop.create(req.body);
-
     // Change user role to seller
     const user = await User.findByIdAndUpdate(
         req.user.id,
@@ -107,13 +108,43 @@ const registerShop = asyncHandler(async (req, res, next) => {
         }
     );
 
+    const shop = await Shop.create(req.body);
+
+    // Create ghn shop
+    const ghnshop = await axios
+        .post(
+            ghnUrl + "/shop/register",
+            {
+                district_id: 1550,
+                ward_code: "420112",
+                name: shop.name,
+                phone: shop.phone,
+                address: "35 dd p12 qtb",
+            },
+            {
+                headers: {
+                    Token: ghnToken,
+                },
+            }
+        )
+        .catch((err) => {
+            console.log(err);
+        });
+
+    // Update ghn shop id
+
+    if (!ghnshop || ghnshop.data.code !== 200) {
+        return next(new ErrorResponse(`Error when create GHN shop`, 400));
+    }
+
+    shop.ghnShopId = ghnshop.data.data.shop_id;
+    await shop.save();
+
     res.status(201).json({
         success: true,
         data: shop,
-        newRole: user.role,
     });
 });
-
 
 // @desc    Approve shop
 // @route   PUT /api/v1/shops/:shopId/approve
@@ -123,9 +154,7 @@ const approveShop = asyncHandler(async (req, res, next) => {
     const shop = await Shop.findById(shopId);
 
     if (!shop) {
-        return next(
-            new ErrorResponse(`Shop not found with id ${shopId}`, 404)
-        );
+        return next(new ErrorResponse(`Shop not found with id ${shopId}`, 404));
     }
 
     // Make sure the user is shop owner

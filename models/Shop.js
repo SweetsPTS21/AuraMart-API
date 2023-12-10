@@ -37,6 +37,9 @@ const ShopSchema = new mongoose.Schema(
             enum: ["pending", "active", "inactive"],
             default: "pending",
         },
+        ghnShopId: {
+            type: String,
+        },
         createdAt: {
             type: Date,
             default: Date.now,

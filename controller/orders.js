@@ -1,8 +1,12 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Shop = require("../models/Shop");
+const StockProduct = require("../models/StockProduct");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
+const axios = require("axios");
+const ghnToken = process.env.GHN_TOKEN;
+const ghnUrl = process.env.GHN_URL;
 
 // @desc    Get all orders
 // @route   GET /api/v1/orders
@@ -87,12 +91,107 @@ const addOrder = asyncHandler(async (req, res, next) => {
     //     new ErrorResponse(`No product with id ${req.params.productId}`, 404)
     //   );
     // }
+    const order = req.body;
+    const product = await Product.findById(req.body.product);
+    const shop = await Shop.findById(req.body.shop);
 
-    const order = await Order.create(req.body);
+    const ghnData = {
+        payment_type_id: 2,
+        note: "This is note",
+        required_note: "KHONGCHOXEMHANG",
+        from_name: shop.name,
+        from_phone: shop.phone,
+        from_address: shop.address,
+        from_ward_name: "Phường 14",
+        from_district_name: "Quận 10",
+        from_province_name: "HCM",
+        return_phone: "0332190444",
+        return_address: "39 NTT",
+        return_district_id: null,
+        return_ward_code: "",
+        client_order_code: "",
+        to_name: order.receiver,
+        to_phone: order.phone,
+        to_address: order.address,
+        to_ward_code: "20308",
+        to_district_id: 1444,
+        cod_amount: order.total,
+        content: "This is content",
+        weight: 200,
+        length: 1,
+        width: 19,
+        height: 10,
+        pick_station_id: 1444,
+        deliver_station_id: null,
+        insurance_value: 4000000,
+        service_id: 0,
+        service_type_id: 2,
+        coupon: null,
+        pick_shift: [2],
+        items: [
+            {
+                name: product.name,
+                code: "Polo123",
+                quantity: order.quantity,
+                price: product.price,
+                length: 12,
+                width: 12,
+                height: 12,
+                weight: 1200,
+                category: {
+                    level1: "Áo",
+                },
+            },
+        ],
+    };
+
+    if (order.shippingMethod === "GHN") {
+        const ghnResponse = await axios
+            .post(ghnUrl + "/shipping-order/create", ghnData, {
+                headers: {
+                    Token: ghnToken,
+                    ShopId: shop.ghnShopId,
+                },
+            })
+            .catch((err) => {
+                const error = err.response.data;
+                console.log({ code: error.code, message: error.message });
+                return next(
+                    new ErrorResponse(
+                        `Error when create GHN order: ${error.message}`,
+                        400
+                    )
+                );
+            });
+
+        if (!ghnResponse || ghnResponse.data.code !== 200) {
+            return next(new ErrorResponse(`Error when create GHN order`, 400));
+        }
+
+        order.ghnOrderCode = ghnResponse.data.data.order_code;
+    }
+
+    // Create order
+    const order_ = await Order.create(req.body);
+
+    // Update product sold quantity
+    product.soldQuantity += order.quantity;
+    await product.save();
+
+    // Update stock product quantity
+    const stockProduct = await StockProduct.findOne({
+        product: order.product,
+        shop: order.shop,
+    });
+
+    if (stockProduct) {
+        stockProduct.quantity -= order.quantity;
+        await stockProduct.save();
+    }
 
     res.status(201).json({
         success: true,
-        data: order,
+        data: order_,
     });
 });
 
@@ -220,7 +319,9 @@ const confirmReceivedOrder = asyncHandler(async (req, res, next) => {
         );
     }
 
+    // Update order state
     order.currentState = "Received";
+    order.paymentState = "Paid";
 
     await order.save();
 

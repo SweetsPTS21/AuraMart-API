@@ -78,6 +78,7 @@ const ProductSchema = new mongoose.Schema(
         },
         soldQuantity: {
             type: Number,
+            default: 0,
             min: [0, "Quantity cannot be lower than 0"],
         },
         shop: {

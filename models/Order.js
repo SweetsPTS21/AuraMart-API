@@ -40,6 +40,14 @@ const OrderSchema = new mongoose.Schema(
             enum: ["Pending", "Paid", "Failed"],
             default: "Pending",
         },
+        shippingMethod: {
+            type: String,
+            enum: ["GHN", "GHTK", "VNPOST"],
+            default: "",
+        },
+        ghnOrderCode: {
+            type: String,
+        },
         currentState: {
             type: String,
             required: true,

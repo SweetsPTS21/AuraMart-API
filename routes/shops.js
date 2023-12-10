@@ -33,6 +33,7 @@ const {
     deleteStock,
 } = require("../controller/stocks");
 
+
 const Stock = require("../models/Stock");
 
 const { getProductsOfShops, addProduct } = require("../controller/products");
