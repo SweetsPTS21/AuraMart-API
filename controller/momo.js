@@ -183,7 +183,7 @@ const momoIpn = asyncHandler(async (req, res, next) => {
                 message: "Confirm Success",
             });
         } else {
-            paymentStatus = "Failed";
+            paymentStatus = "Pending";
 
             // Cap nhat trang thai thanh toan cua don hang
             order.paymentState = paymentStatus;

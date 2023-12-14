@@ -194,7 +194,7 @@ const vnpayIpn = asyncHandler(async (req, res, next) => {
                         });
                     } else {
                         //that bai
-                        paymentStatus = "Failed";
+                        paymentStatus = "Pending";
 
                         // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
                         // Cap nhat trang thai don hang that bai
