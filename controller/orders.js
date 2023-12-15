@@ -200,6 +200,7 @@ const addOrder = asyncHandler(async (req, res, next) => {
 // @access  Private/ User - Admin
 const updateOrder = asyncHandler(async (req, res, next) => {
     let order = await Order.findById(req.params.id);
+    req.body.user = req.user.id;
 
     if (!order) {
         return next(

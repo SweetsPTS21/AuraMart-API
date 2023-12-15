@@ -165,11 +165,11 @@ const getShopStatistic = asyncHandler(async (req, res, next) => {
     ]);
 
     const result = {
-        orders: orders[0].orders,
-        products: products[0].products,
-        reviews: reviews[0].reviews,
-        revenue: totalRevenue[0].totalRevenue,
-        followers: followers[0].followers,
+        orders: orders[0] ? orders[0].orders : 0,
+        products: products[0] ? products[0].products : 0,
+        reviews: reviews[0] ? reviews[0].reviews : 0,
+        revenue: totalRevenue[0] ? totalRevenue[0].totalRevenue : 0,
+        followers: followers[0] ? followers[0].followers : 0,
     };
 
     res.status(200).json({

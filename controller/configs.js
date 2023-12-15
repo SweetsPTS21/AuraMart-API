@@ -29,10 +29,10 @@ const addShopConfig = asyncHandler(async (req, res, next) => {
     req.body.shop = req.params.shopId;
     req.body.user = req.user.id;
 
+    const role = req.user.role;
+
     // Make sure user is admin or seller
-    if (
-        (req.user.role !== "admin" || req.user.role !== "seller")
-    ) {
+    if (role !== "admin" && role !== "seller") {
         return next(
             new ErrorResponse(`Not authorized to update shopConfig`),
             401
@@ -67,8 +67,7 @@ const updateShopConfig = asyncHandler(async (req, res, next) => {
 
     // Make sure user is shopConfig owner
     if (
-        shopConfig.user.toString() !== req.user.id &&
-        (req.user.role !== "admin" || req.user.role !== "seller")
+        shopConfig.user.toString() !== req.user.id && req.user.role !== "admin" 
     ) {
         return next(
             new ErrorResponse(`Not authorized to update shopConfig`),
