@@ -111,6 +111,15 @@ ProductSchema.pre("save", function (next) {
     next();
 });
 
+// Create product slug from the name each update by id
+ProductSchema.pre("findByIdAndUpdate", function (next) {
+    this.slug = slugify(this.name, {
+        lower: true,
+        remove: /[*+~.,/|()'"!:@]/g,
+    });
+    next();
+});
+
 // Cascade delete reviews when a product is deleted
 ProductSchema.pre("remove", async function (next) {
     console.log(`Reviews is being removed from product ${this._id}`);

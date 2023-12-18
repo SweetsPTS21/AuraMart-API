@@ -2,16 +2,16 @@ const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema(
     {
-        product: {
-            type: mongoose.Schema.ObjectId,
-            ref: "Product",
-            required: true,
-        },
-        shop: {
-            type: mongoose.Schema.ObjectId,
-            ref: "Shop",
-            required: true,
-        },
+        // product: {
+        //     type: mongoose.Schema.ObjectId,
+        //     ref: "Product",
+        //     required: true,
+        // },
+        // shop: {
+        //     type: mongoose.Schema.ObjectId,
+        //     ref: "Shop",
+        //     required: true,
+        // },
         quantity: Number,
         address: {
             type: String,
@@ -26,7 +26,7 @@ const OrderSchema = new mongoose.Schema(
         },
         total: {
             type: Number,
-            required: [true, "Please add total price"],
+            // required: [true, "Please add total price"],
         },
         paymentMethod: {
             type: String,

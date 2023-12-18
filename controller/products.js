@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const Shop = require("../models/Shop");
 const SaleProduct = require("../models/SaleProduct");
+const slugify = require("slugify");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 
@@ -149,6 +150,12 @@ const updateProduct = asyncHandler(async (req, res, next) => {
             )
         );
     }
+
+    // update product slug
+    req.body.slug = slugify(req.body.name, {
+        lower: true,
+        remove: /[*+~.,/|()'"!:@]/g,
+    });
 
     product = await Product.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
