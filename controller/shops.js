@@ -1,5 +1,6 @@
 const Shop = require("../models/Shop");
 const User = require("../models/User");
+const Denunciation = require("../models/Denunciation");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const axios = require("axios");
@@ -189,6 +190,50 @@ const approveShop = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @desc    Report shop
+// @route   PUT /api/v1/shops/:shopId/report
+// @access  Private
+const reportShop = asyncHandler(async (req, res, next) => {
+    const shop = await Shop.findById(req.params.id);
+
+    if (!shop) {
+        return next(
+            new ErrorResponse(`No shop found with id ${req.params.id}`, 404)
+        );
+    }
+
+    // Check if the user has already reported this shop
+    const check = await Denunciation.findOne({
+        shop: req.params.id,
+        user: req.user.id,
+    });
+
+
+    if (check) {
+        return next(
+            new ErrorResponse(
+                `User ${req.user.id} has already reported this shop`,
+                400
+            )
+        );
+    }
+
+    const denunciationData = {
+        reason: req.body.reason,
+        description: req.body.description,
+        shop: req.params.id,
+        user: req.user.id,
+    };
+
+    const denunciation = await Denunciation.create(denunciationData);
+
+    res.status(200).json({
+        success: true,
+        data: denunciation,
+    });
+});
+
+
 // @desc    Update shop
 // @route   PUT /api/v1/shops/:id
 // @access  Private
@@ -257,6 +302,7 @@ module.exports = {
     createShop,
     registerShop,
     approveShop,
+    reportShop,
     updateShop,
     deleteShop,
 };

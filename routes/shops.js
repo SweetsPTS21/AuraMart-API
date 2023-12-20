@@ -6,6 +6,7 @@ const {
     createShop,
     registerShop,
     approveShop,
+    reportShop,
     updateShop,
     deleteShop,
 } = require("../controller/shops");
@@ -32,7 +33,6 @@ const {
     updateStock,
     deleteStock,
 } = require("../controller/stocks");
-
 
 const Stock = require("../models/Stock");
 
@@ -78,6 +78,8 @@ router
     .get(getShop)
     .put(protect, authorize("seller", "admin"), updateShop)
     .delete(protect, authorize("seller", "admin"), deleteShop);
+
+router.route("/:shopId/report").post(protect, reportShop);
 
 router
     .route("/:shopId/configs")
