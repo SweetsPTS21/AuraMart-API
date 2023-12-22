@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const OrderDetail = require("../models/OrderDetail");
 const Product = require("../models/Product");
 const Shop = require("../models/Shop");
 const StockProduct = require("../models/StockProduct");
@@ -16,10 +17,30 @@ const getOrders = asyncHandler(async (req, res, next) => {
     if (req.params.shopId) {
         let orders = await Order.find({ shop: req.params.shopId });
 
+        // get all order details by shop id
+        let orderDetails = await OrderDetail.find({ shop: req.params.shopId })
+            .populate({
+                path: "product shop",
+                select: "name slug photo price discount",
+            })
+            .sort("-createdAt");
+        // get all orders by shop id
+        let shopOrders = [];
+        orders.forEach((order) => {
+            let orderDetail = orderDetails.filter(
+                (orderDetail) =>
+                    orderDetail.order.toString() === order._id.toString()
+            );
+            shopOrders.push({
+                ...order._doc,
+                orderDetails: orderDetail,
+            });
+        });
+
         return res.status(200).json({
             success: true,
-            total: orders.length,
-            data: orders,
+            total: shopOrders.length,
+            data: shopOrders,
         });
     } else {
         res.status(200).json(res.advancedResults);
@@ -35,12 +56,28 @@ const getUserOrders = asyncHandler(async (req, res, next) => {
 
     let orders = await Order.find({ user: req.params.userId })
         .populate({
-            path: "product shop",
-            select: "name slug photo price discount",
+            path: "shop",
+            select: "name",
         })
         .sort("-" + sortBy)
         .limit(limit);
-
+    
+    // get all order details by order id
+    orders = await Promise.all(
+        orders.map(async (order) => {
+            let orderDetails = await OrderDetail.find({ order: order._id })
+                .populate({
+                    path: "product",
+                    select: "name slug photo price discount",
+                })
+                .sort("-createdAt");
+            return {
+                ...order._doc,
+                orderDetails: orderDetails,
+            };
+        })
+    );
+    
     req.body.user = req.user.id;
 
     // Allow user to get his/her history only
@@ -84,114 +121,151 @@ const getOrder = asyncHandler(async (req, res, next) => {
 const addOrder = asyncHandler(async (req, res, next) => {
     req.body.user = req.user.id;
 
-    // const product = await Product.findById(req.body.product);
+    const orders = req.body
 
-    // if (!product) {
-    //   return next(
-    //     new ErrorResponse(`No product with id ${req.params.productId}`, 404)
-    //   );
-    // }
-    const order = req.body;
-    const product = await Product.findById(req.body.product);
-    const shop = await Shop.findById(req.body.shop);
+    orders.forEach(async (order) => {
+        const order_ = await Order.create({...order, user: req.body.user});
 
-    const ghnData = {
-        payment_type_id: 2,
-        note: "This is note",
-        required_note: "KHONGCHOXEMHANG",
-        from_name: shop.name,
-        from_phone: shop.phone,
-        from_address: shop.address,
-        from_ward_name: "Phường 14",
-        from_district_name: "Quận 10",
-        from_province_name: "HCM",
-        return_phone: "0332190444",
-        return_address: "39 NTT",
-        return_district_id: null,
-        return_ward_code: "",
-        client_order_code: "",
-        to_name: order.receiver,
-        to_phone: order.phone,
-        to_address: order.address,
-        to_ward_code: "20308",
-        to_district_id: 1444,
-        cod_amount: order.total,
-        content: "This is content",
-        weight: 200,
-        length: 1,
-        width: 19,
-        height: 10,
-        pick_station_id: 1444,
-        deliver_station_id: null,
-        insurance_value: 4000000,
-        service_id: 0,
-        service_type_id: 2,
-        coupon: null,
-        pick_shift: [2],
-        items: [
-            {
-                name: product.name,
-                code: "Polo123",
-                quantity: order.quantity,
-                price: product.price,
-                length: 12,
-                width: 12,
-                height: 12,
-                weight: 1200,
-                category: {
-                    level1: "Áo",
-                },
-            },
-        ],
-    };
+        // Create order detail
+        order.products.forEach(async (product) => {
+            const orderDetail = {
+                order: order_._id,
+                ...product,
+            };
 
-    if (order.shippingMethod === "GHN") {
-        const ghnResponse = await axios
-            .post(ghnUrl + "/shipping-order/create", ghnData, {
-                headers: {
-                    Token: ghnToken,
-                    ShopId: shop.ghnShopId,
-                },
-            })
-            .catch((err) => {
-                const error = err.response.data;
-                console.log({ code: error.code, message: error.message });
-                return next(
-                    new ErrorResponse(
-                        `Error when create GHN order: ${error.message}`,
-                        400
-                    )
-                );
+            await OrderDetail.create(orderDetail);
+
+            // Update product sold quantity
+            const product_ = await Product.findById(product.product);
+            product_.soldQuantity += product.quantity;
+            await product_.save();
+
+            // Update stock product quantity
+            const stockProduct = await StockProduct.findOne({
+                product: product.product,
+                shop: product.shop,
             });
 
-        if (!ghnResponse || ghnResponse.data.code !== 200) {
-            return next(new ErrorResponse(`Error when create GHN order`, 400));
-        }
+            if (stockProduct) {
+                stockProduct.quantity -= product.quantity;
+                await stockProduct.save();
+            }
+        });
+    })
 
-        order.ghnOrderCode = ghnResponse.data.data.order_code;
-    }
+    // const ghnData = {
+    //     payment_type_id: 2,
+    //     note: "This is note",
+    //     required_note: "KHONGCHOXEMHANG",
+    //     from_name: shop.name,
+    //     from_phone: shop.phone,
+    //     from_address: shop.address,
+    //     from_ward_name: "Phường 14",
+    //     from_district_name: "Quận 10",
+    //     from_province_name: "HCM",
+    //     return_phone: "0332190444",
+    //     return_address: "39 NTT",
+    //     return_district_id: null,
+    //     return_ward_code: "",
+    //     client_order_code: "",
+    //     to_name: order.receiver,
+    //     to_phone: order.phone,
+    //     to_address: order.address,
+    //     to_ward_code: "20308",
+    //     to_district_id: 1444,
+    //     cod_amount: order.total,
+    //     content: "This is content",
+    //     weight: 200,
+    //     length: 1,
+    //     width: 19,
+    //     height: 10,
+    //     pick_station_id: 1444,
+    //     deliver_station_id: null,
+    //     insurance_value: 4000000,
+    //     service_id: 0,
+    //     service_type_id: 2,
+    //     coupon: null,
+    //     pick_shift: [2],
+    //     items: [
+    //         {
+    //             name: product.name,
+    //             code: "Polo123",
+    //             quantity: order.quantity,
+    //             price: product.price,
+    //             length: 12,
+    //             width: 12,
+    //             height: 12,
+    //             weight: 1200,
+    //             category: {
+    //                 level1: "Áo",
+    //             },
+    //         },
+    //     ],
+    // };
+
+    // if (order.shippingMethod === "GHN") {
+    //     const ghnResponse = await axios
+    //         .post(ghnUrl + "/shipping-order/create", ghnData, {
+    //             headers: {
+    //                 Token: ghnToken,
+    //                 ShopId: shop.ghnShopId,
+    //             },
+    //         })
+    //         .catch((err) => {
+    //             const error = err.response.data;
+    //             console.log({ code: error.code, message: error.message });
+    //             return next(
+    //                 new ErrorResponse(
+    //                     `Error when create GHN order: ${error.message}`,
+    //                     400
+    //                 )
+    //             );
+    //         });
+
+    //     if (!ghnResponse || ghnResponse.data.code !== 200) {
+    //         return next(new ErrorResponse(`Error when create GHN order`, 400));
+    //     }
+
+    //     order.ghnOrderCode = ghnResponse.data.data.order_code;
+    // }
 
     // Create order
-    const order_ = await Order.create(req.body);
+    // const order_ = await Order.create(order);
 
-    // Update product sold quantity
-    product.soldQuantity += order.quantity;
-    await product.save();
+    // Create order detail
+    // products.forEach(async (product) => {
+    //     const orderDetail = {
+    //         order: order_._id,
+    //         product: product.product,
+    //         shop: product.shop,
+    //         quantity: product.quantity,
+    //         color: product.color,
+    //         total: product.total,
+    //         note: product.note,
+    //     };
 
-    // Update stock product quantity
-    const stockProduct = await StockProduct.findOne({
-        product: order.product,
-        shop: order.shop,
-    });
+    //     await OrderDetail.create(orderDetail);
 
-    if (stockProduct) {
-        stockProduct.quantity -= order.quantity;
-        await stockProduct.save();
-    }
+    //     // Update product sold quantity
+    //     const product_ = await Product.findById(product.product);
+    //     product_.soldQuantity += product.quantity;
+    //     await product_.save();
+
+    //     // Update stock product quantity
+    //     const stockProduct = await StockProduct.findOne({
+    //         product: product.product,
+    //         shop: product.shop,
+    //     });
+
+    //     if (stockProduct) {
+    //         stockProduct.quantity -= product.quantity;
+    //         await stockProduct.save();
+    //     }
+    // });
 
     res.status(201).json({
         success: true,
-        data: order_,
+        data: orders,
     });
 });
 

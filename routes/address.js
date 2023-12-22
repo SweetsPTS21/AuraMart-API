@@ -22,7 +22,7 @@ router.route("/").get(
 router
     .route("/:id")
     .get(getAddress)
-    .put(protect, authorize("user", "admin"), updateAddress)
-    .delete(protect, authorize("user", "admin"), deleteAddress);
+    .put(protect, authorize("user", "seller","admin"), updateAddress)
+    .delete(protect, authorize("user","seleler", "admin"), deleteAddress);
 
 module.exports = router;
