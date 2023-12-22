@@ -65,9 +65,33 @@ const getProduct = asyncHandler(async (req, res, next) => {
         );
     }
 
+    // if product is sale product => get sale product
+    if (product.sale) {
+        const saleProduct = await SaleProduct.findOne({ product: product._id });
+        if (saleProduct) {
+            const product_ = {
+                ...product._doc,
+                sale: saleProduct,
+            };
+
+            redis_client.setex(
+                `productId:${req.params.id}`,
+                60,
+                JSON.stringify(product_)
+            );
+            return next(
+                res.status(200).json({
+                    success: true,
+                    data: product_,
+                })
+            );
+        }
+    }
+
+    // cached in redis in 1 minute
     redis_client.setex(
         `productId:${req.params.id}`,
-        process.env.CACHE_EXPIRE,
+        60,
         JSON.stringify(product)
     );
 
@@ -254,12 +278,13 @@ const getSaleProduct = asyncHandler(async (req, res, next) => {
     // Get sale products with sale=true and beginAt > today
     // Just get products in one week
     const today = new Date();
-    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
 
     // populate with all fields of product
     const saleProducts = await SaleProduct.find({
         sale: true,
-        beginAt: { $gt: today, $lt: nextWeek },
+        beginAt: { $lte: nextWeek },
     }).populate({
         path: "product",
         select: "", // select all fields
@@ -269,11 +294,29 @@ const getSaleProduct = asyncHandler(async (req, res, next) => {
         },
     });
 
-    // cached in redis
+    // if today > (beginAt + 24h) => delete sale product
+    for (const prod of saleProducts) {
+        const { beginAt } = prod;
+        const endDate = new Date(beginAt);
+        endDate.setDate(endDate.getDate() + 1);
+
+        if (today > endDate) {
+            // Set product status to false
+            await Product.findByIdAndUpdate(prod.product._id, { sale: false });
+
+            // Delete sale product
+            await SaleProduct.findByIdAndDelete(prod._id);
+
+            // remove product from saleProducts
+            saleProducts.splice(saleProducts.indexOf(prod), 1);
+        }
+    }
+
+    // cached in redis in 2 minutes
     const getUrl = url.parse(req.url, true).href;
     redis_client.setex(
         `sale_products:${getUrl}`,
-        process.env.CACHE_EXPIRE,
+        120,
         JSON.stringify({
             total: saleProducts.length,
             pagination: {
