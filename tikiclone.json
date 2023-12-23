@@ -1,1810 +1,1637 @@
 {
-	"info": {
-		"_postman_id": "a31f52a8-18bb-4d0f-b9b3-b3c4f7069592",
-		"name": "Tiki Clone",
-		"description": "A RESTful API for Tiki clone app",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Shops",
-			"item": [
-				{
-					"name": "Get All Shops",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/api/v1/shops",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops"
-							]
-						},
-						"description": "- Get all shops in the database. \n- Suported query:\n1. ?select=name,description\n2. ?sort=name,\n3. ?limit=3,\n4. ?page=2\n- You can combine query with &:\n1. ?select=name&sort=price: get only product'name sorted by price\n2. ....."
-					},
-					"response": []
-				},
-				{
-					"name": "Get Single Shops",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/api/v1/shops/5e43bbee02bb1f2c76dcf8bf",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops",
-								"5e43bbee02bb1f2c76dcf8bf"
-							]
-						},
-						"description": "Get a single shop by id"
-					},
-					"response": []
-				},
-				{
-					"name": "Create New Shop",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Phuong's flower shop \",\n\t\"description\" : \"A flower shop for you\",\n\t\"phone\": \"1234567890\",\n\t\"address\": \"Hanoi, Vietnam\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/shops",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops"
-							]
-						},
-						"description": "Create a new shop and save to db"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Shop",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"phone\": 1234567890,\n\t\"address\": \"Hoang Quoc Viet, Hanoi, Vietnam\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/shops/5e464b1ed9a63717136a2a1e",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops",
-								"5e464b1ed9a63717136a2a1e"
-							]
-						},
-						"description": "Update shop info by id"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Shop",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/api/v1/shops/5e464b1ed9a63717136a2a1e",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops",
-								"5e464b1ed9a63717136a2a1e"
-							]
-						},
-						"description": "Delete a shop from database by id"
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Products",
-			"item": [
-				{
-					"name": "Get All Products",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/api/v1/products",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products"
-							]
-						},
-						"description": "Get all product with it's owner in the database"
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Product of A Shop",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/shops/5e44147167e8c37076e691bb/products",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops",
-								"5e44147167e8c37076e691bb",
-								"products"
-							]
-						},
-						"description": "Get all products of a single shop by shopId"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Single Product",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products",
-								"5e48f8970bedbc0e99c44f01"
-							]
-						},
-						"description": "Get a single product by id"
-					},
-					"response": []
-				},
-				{
-					"name": "Create New Product",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"HyperX Pulsefire Raid - Gaming Mouse\",\n    \"category\": [\n        \"accessories\",\n        \"books-gifts\"\n    ],\n    \"price\": \"59.99\",\n    \"description\": \"11 Programmable Buttons, RGB, Ergonomic Design, Comfortable Side Grips, Software-Controlled Customization\",\n    \"dimension\": \"11 x 5.2 x 11 inches\",\n    \"weight\": \"50g\",\n    \"specs\": \"Connection Type: Wired, Buttons: 11, Max Speed: 450IPS\",\n    \"branch\": \"HyperX\",\n    \"origin\": \"US\",\n    \"discount\": 10,\n    \"colors\": [\n        \"Black&Red\",\n        \"Blacka&Green\",\n        \"Black&Blue\"\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/shops/5e44068f09d17e6126c0022f/products",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops",
-								"5e44068f09d17e6126c0022f",
-								"products"
-							]
-						},
-						"description": "Create a new product with body and shopId"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Product",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"price\": 63.5,\n\t\"discount\": 10\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/products/5e44f9f38a638c26e0dc57e9",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products",
-								"5e44f9f38a638c26e0dc57e9"
-							]
-						},
-						"description": "Update a product with body and id"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Product",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/products/5e44f9f38a638c26e0dc57e9",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products",
-								"5e44f9f38a638c26e0dc57e9"
-							]
-						},
-						"description": "Delete a single product by id"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Photo To Product",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "",
-								"value": "",
-								"type": "text",
-								"disabled": true
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/home/phuong/Pictures/Screenshot from 2020-03-01 22-08-07.png"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01/photo",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products",
-								"5e48f8970bedbc0e99c44f01",
-								"photo"
-							]
-						},
-						"description": "Add photo to a product with id"
-					},
-					"response": []
-				}
-			],
-			"description": "All routes for CRUD products",
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Authentication",
-			"item": [
-				{
-					"name": "Create New User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									"pm.environment.set(\"TOKEN\", pm.response.json().token)"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"Phuong Minh\",\n    \"email\": \"user@gmail.com\",\n    \"password\": \"123456\",\n    \"role\": \"user\",\n    \"gender\": \"male\",\n    \"dob\": \"1999-03-23\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/register",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"register"
-							]
-						},
-						"description": "Register new user with information in body"
-					},
-					"response": []
-				},
-				{
-					"name": "Login User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "36b81d39-8769-4f06-8c4d-d773b916db7a",
-								"exec": [
-									"pm.environment.set(\"TOKEN\", pm.response.json().token)"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"123456\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/login",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"login"
-							]
-						},
-						"description": "Log user in with email and password"
-					},
-					"response": []
-				},
-				{
-					"name": "Get User Info",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/me",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"me"
-							]
-						},
-						"description": "Get user's information with token"
-					},
-					"response": []
-				},
-				{
-					"name": "Forgot Password",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"phuong1@gmail.com\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/forgotpassword",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"forgotpassword"
-							]
-						},
-						"description": "Send user email to reset his/her password"
-					},
-					"response": []
-				},
-				{
-					"name": "Reset Password",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"password\" : \"123456\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/resetpassword/320b2ebc57fe07d618a03c49c62c75624282191f",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"resetpassword",
-								"320b2ebc57fe07d618a03c49c62c75624282191f"
-							]
-						},
-						"description": "Reset user password with reset token and new password in body"
-					},
-					"response": []
-				},
-				{
-					"name": "Change User Info",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"name\": \"Dinh Nhu Minh Phuong\",\n\t\"phone\": \"0123456789\",\n\t\"address\": \"Hanoi, Vietnam\",\n\t\"dob\": \"1999-04-24\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/updatedetails",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"updatedetails"
-							]
-						},
-						"description": "Change user info (logged in user only)"
-					},
-					"response": []
-				},
-				{
-					"name": "Change User Passsword",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"currentPassword\": \"123456\",\n\t\"newPassword\": \"phuong1\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/updatepassword",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"updatepassword"
-							]
-						},
-						"description": "Change user current password to a new one (logged in user only)"
-					},
-					"response": []
-				},
-				{
-					"name": "Log User Out",
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/logout",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"logout"
-							]
-						},
-						"description": "Log user out and clear cookie"
-					},
-					"response": []
-				}
-			],
-			"description": "All routes for user to register, login, ...",
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Users",
-			"item": [
-				{
-					"name": "Get All Users",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/users",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users"
-							]
-						},
-						"description": "Get all users in the database (admin only)"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Single User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/users/5e4a38ec1608cf314999c34c",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"5e4a38ec1608cf314999c34c"
-							]
-						},
-						"description": "Get a single user's info by id (admin only)"
-					},
-					"response": []
-				},
-				{
-					"name": "Add New User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									"pm.environment.set(\"TOKEN\", pm.response.json().token)"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"This is Phuong\",\n    \"email\": \"phuong2@gmail.com\",\n    \"password\": \"123456\",\n    \"role\": \"user\",\n    \"gender\": \"male\",\n    \"dob\": \"1999-05-15\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/users",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users"
-							]
-						},
-						"description": "Add new user to the database by admin"
-					},
-					"response": []
-				},
-				{
-					"name": "Update User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"newPassword\": \"abcdef\",\n\t\"newName\" : \"Newname by Phuong\",\n\t\"newRole\" : \"user\",\n\t\"newAddress\": \"Tay Tuu\",\n\t\"newPhone\": \"12345687890\",\n\t\"newGender\": \"male\",\n\t\"newDob\": \"1998-03-23\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/users/5e6852945825d129e5e9038f",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"5e6852945825d129e5e9038f"
-							]
-						},
-						"description": "Update a user's info by id (admin only)"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/users/5e4a38ec1608cf314999c34c",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"users",
-								"5e4a38ec1608cf314999c34c"
-							]
-						},
-						"description": "Delete a user by id (admin only)"
-					},
-					"response": []
-				}
-			],
-			"description": "All routes for CRUD users (admin only)",
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Reviews",
-			"item": [
-				{
-					"name": "Get All Reviews",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/reviews",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"reviews"
-							]
-						},
-						"description": "Get all reviews in the databases"
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Reviews Of A Product",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01/reviews",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products",
-								"5e48f8970bedbc0e99c44f01",
-								"reviews"
-							]
-						},
-						"description": "Get all reviews of a single product with product id"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Single Review",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/reviews/5e4ca688d7594d1dd1d7b451",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"reviews",
-								"5e4ca688d7594d1dd1d7b451"
-							]
-						},
-						"description": "Get a single review by Id"
-					},
-					"response": []
-				},
-				{
-					"name": "Create New Review",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"title\": \"The flower is awesome!\",\n    \"text\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec viverra feugiat mauris id viverra. Duis luctus ex sed facilisis ultrices.\",\n    \"rating\": \"3\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01/reviews",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"products",
-								"5e48f8970bedbc0e99c44f01",
-								"reviews"
-							]
-						},
-						"description": "Add a new review for a product in the database"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Single Review",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"rating\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/reviews/5e4ca688d7594d1dd1d7b451",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"reviews",
-								"5e4ca688d7594d1dd1d7b451"
-							]
-						},
-						"description": "Update a single review with id"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Single Review",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"rating\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/reviews/5e4cb0b31898f826aaa26ae7",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"reviews",
-								"5e4cb0b31898f826aaa26ae7"
-							]
-						},
-						"description": "Delete a single review by id"
-					},
-					"response": []
-				}
-			],
-			"description": "All routes for reviews",
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Orders",
-			"item": [
-				{
-					"name": "Get All Orders",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/orders",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"orders"
-							]
-						},
-						"description": "Get all orders in the database (admin only)"
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Orders of A Shop",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/shops/5e4406dfe67ba2619654062e/orders",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops",
-								"5e4406dfe67ba2619654062e",
-								"orders"
-							]
-						},
-						"description": "Get all orders of a shop from shopId"
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Orders of A User",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/auth/5e4799e34768833202cb9904/history?limit=2&sort=total",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"auth",
-								"5e4799e34768833202cb9904",
-								"history"
-							],
-							"query": [
-								{
-									"key": "limit",
-									"value": "2"
-								},
-								{
-									"key": "sort",
-									"value": "total"
-								}
-							]
-						},
-						"description": "Get all orders of a single user in the database\nSuported queries: \n- &limit=1, default is 5 orders\n- &sort=total, default is createdAt"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Single Order",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/orders/5e5921132947932aae3fdea4",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"orders",
-								"5e5921132947932aae3fdea4"
-							]
-						},
-						"description": "Get a single order by id"
-					},
-					"response": []
-				},
-				{
-					"name": "Add New Order",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"product\": \"5e48f8970bedbc0e99c44f02\",\n    \"shop\": \"5e4406dfe67ba2619654062e\",\n    \"quantity\": 2,\n    \"address\": \"Hanoi\",\n    \"phone\": \"123456789\",\n    \"total\": 10000\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/orders/checkout",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"orders",
-								"checkout"
-							]
-						},
-						"description": "Add a new order by json in body"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Single Order",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"quantity\": 30,\n    \"address\": \"Hoang Quoc Viet, Hanoi\",\n    \"phone\": \"123456789\",\n    \"total\": 12000\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/orders/5e59c7766654f11de6fb0d79",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"orders",
-								"5e59c7766654f11de6fb0d79"
-							]
-						},
-						"description": "Update a single order by id"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Single Order",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"quantity\": 30,\n    \"address\": \"Hoang Quoc Viet, Hanoi\",\n    \"phone\": \"123456789\",\n    \"total\": 12000\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/api/v1/orders/5e59c7766654f11de6fb0d79",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"orders",
-								"5e59c7766654f11de6fb0d79"
-							]
-						},
-						"description": "Delete a single order"
-					},
-					"response": []
-				}
-			],
-			"description": "All routes for CRUD orders (user, seller and admin)",
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Stats",
-			"item": [
-				{
-					"name": "Get Top Sold Products",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "670a8b37-54a1-467a-9f03-28c044acabfc",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{URL}}/api/v1/stats/products?limit=1&sort=order",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"stats",
-								"products"
-							],
-							"query": [
-								{
-									"key": "limit",
-									"value": "1"
-								},
-								{
-									"key": "sort",
-									"value": "order"
-								}
-							]
-						},
-						"description": "Get top 5 sold products in the database\nSupport queries: \n- ?limit=5\n- ?sort=order ---> sort by number of orders in database, otherwise sort by number of sold quantity"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Top Sold Product Of A Shop",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{TOKEN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{URL}}/api/v1/shops/5e4406dfe67ba2619654062e/stats?limit=1",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"shops",
-								"5e4406dfe67ba2619654062e",
-								"stats"
-							],
-							"query": [
-								{
-									"key": "limit",
-									"value": "1"
-								}
-							]
-						},
-						"description": "Get top sold product of a single shop\nSupported queries: \n- ?limit=10, default is 5"
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		}
-	],
-	"protocolProfileBehavior": {}
+    "info": {
+        "_postman_id": "a31f52a8-18bb-4d0f-b9b3-b3c4f7069592",
+        "name": "Aumart API Docs",
+        "description": "A RESTful API for Aumart website",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Shops",
+            "item": [
+                {
+                    "name": "Get All Shops",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "shops"]
+                        },
+                        "description": "- Get all shops in the database. \n- Suported query:\n1. ?select=name,description\n2. ?sort=name,\n3. ?limit=3,\n4. ?page=2\n- You can combine query with &:\n1. ?select=name&sort=price: get only product'name sorted by price\n2. ....."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single Shops",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops/5e43bbee02bb1f2c76dcf8bf",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "shops",
+                                "5e43bbee02bb1f2c76dcf8bf"
+                            ]
+                        },
+                        "description": "Get a single shop by id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create New Shop",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"name\": \"Phuong's flower shop \",\n\t\"description\" : \"A flower shop for you\",\n\t\"phone\": \"1234567890\",\n\t\"address\": \"Hanoi, Vietnam\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "shops"]
+                        },
+                        "description": "Create a new shop and save to db"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Shop",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"phone\": 1234567890,\n\t\"address\": \"Hoang Quoc Viet, Hanoi, Vietnam\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops/5e464b1ed9a63717136a2a1e",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "shops",
+                                "5e464b1ed9a63717136a2a1e"
+                            ]
+                        },
+                        "description": "Update shop info by id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Shop",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops/5e464b1ed9a63717136a2a1e",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "shops",
+                                "5e464b1ed9a63717136a2a1e"
+                            ]
+                        },
+                        "description": "Delete a shop from database by id"
+                    },
+                    "response": []
+                }
+            ],
+            "protocolProfileBehavior": {}
+        },
+        {
+            "name": "Products",
+            "item": [
+                {
+                    "name": "Get All Products",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/products",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "products"]
+                        },
+                        "description": "Get all product with it's owner in the database"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Product of A Shop",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops/5e44147167e8c37076e691bb/products",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "shops",
+                                "5e44147167e8c37076e691bb",
+                                "products"
+                            ]
+                        },
+                        "description": "Get all products of a single shop by shopId"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single Product",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "5e48f8970bedbc0e99c44f01"
+                            ]
+                        },
+                        "description": "Get a single product by id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create New Product",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"HyperX Pulsefire Raid - Gaming Mouse\",\n    \"category\": [\n        \"accessories\",\n        \"books-gifts\"\n    ],\n    \"price\": \"59.99\",\n    \"description\": \"11 Programmable Buttons, RGB, Ergonomic Design, Comfortable Side Grips, Software-Controlled Customization\",\n    \"dimension\": \"11 x 5.2 x 11 inches\",\n    \"weight\": \"50g\",\n    \"specs\": \"Connection Type: Wired, Buttons: 11, Max Speed: 450IPS\",\n    \"branch\": \"HyperX\",\n    \"origin\": \"US\",\n    \"discount\": 10,\n    \"colors\": [\n        \"Black&Red\",\n        \"Blacka&Green\",\n        \"Black&Blue\"\n    ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops/5e44068f09d17e6126c0022f/products",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "shops",
+                                "5e44068f09d17e6126c0022f",
+                                "products"
+                            ]
+                        },
+                        "description": "Create a new product with body and shopId"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Product",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"price\": 63.5,\n\t\"discount\": 10\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/products/5e44f9f38a638c26e0dc57e9",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "5e44f9f38a638c26e0dc57e9"
+                            ]
+                        },
+                        "description": "Update a product with body and id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Product",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/products/5e44f9f38a638c26e0dc57e9",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "5e44f9f38a638c26e0dc57e9"
+                            ]
+                        },
+                        "description": "Delete a single product by id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Photo To Product",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "",
+                                "value": "",
+                                "type": "text",
+                                "disabled": true
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": "/home/phuong/Pictures/Screenshot from 2020-03-01 22-08-07.png"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01/photo",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "5e48f8970bedbc0e99c44f01",
+                                "photo"
+                            ]
+                        },
+                        "description": "Add photo to a product with id"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "All routes for CRUD products",
+            "protocolProfileBehavior": {}
+        },
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Create New User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [
+                                    "pm.environment.set(\"TOKEN\", pm.response.json().token)"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Phuong Minh\",\n    \"email\": \"user@gmail.com\",\n    \"password\": \"123456\",\n    \"role\": \"user\",\n    \"gender\": \"male\",\n    \"dob\": \"1999-03-23\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/register",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "auth", "register"]
+                        },
+                        "description": "Register new user with information in body"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "36b81d39-8769-4f06-8c4d-d773b916db7a",
+                                "exec": [
+                                    "pm.environment.set(\"TOKEN\", pm.response.json().token)"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"123456\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/login",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "auth", "login"]
+                        },
+                        "description": "Log user in with email and password"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User Info",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/me",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "auth", "me"]
+                        },
+                        "description": "Get user's information with token"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Forgot Password",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"email\": \"phuong1@gmail.com\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/forgotpassword",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "auth", "forgotpassword"]
+                        },
+                        "description": "Send user email to reset his/her password"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"password\" : \"123456\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/resetpassword/320b2ebc57fe07d618a03c49c62c75624282191f",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "resetpassword",
+                                "320b2ebc57fe07d618a03c49c62c75624282191f"
+                            ]
+                        },
+                        "description": "Reset user password with reset token and new password in body"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Change User Info",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"name\": \"Dinh Nhu Minh Phuong\",\n\t\"phone\": \"0123456789\",\n\t\"address\": \"Hanoi, Vietnam\",\n\t\"dob\": \"1999-04-24\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/updatedetails",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "auth", "updatedetails"]
+                        },
+                        "description": "Change user info (logged in user only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Change User Passsword",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"currentPassword\": \"123456\",\n\t\"newPassword\": \"phuong1\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/updatepassword",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "auth", "updatepassword"]
+                        },
+                        "description": "Change user current password to a new one (logged in user only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Log User Out",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/logout",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "auth", "logout"]
+                        },
+                        "description": "Log user out and clear cookie"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "All routes for user to register, login, ...",
+            "protocolProfileBehavior": {}
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Get All Users",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/users",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "users"]
+                        },
+                        "description": "Get all users in the database (admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/users/5e4a38ec1608cf314999c34c",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "users",
+                                "5e4a38ec1608cf314999c34c"
+                            ]
+                        },
+                        "description": "Get a single user's info by id (admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add New User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [
+                                    "pm.environment.set(\"TOKEN\", pm.response.json().token)"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"This is Phuong\",\n    \"email\": \"phuong2@gmail.com\",\n    \"password\": \"123456\",\n    \"role\": \"user\",\n    \"gender\": \"male\",\n    \"dob\": \"1999-05-15\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/users",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "users"]
+                        },
+                        "description": "Add new user to the database by admin"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "type": "text",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"newPassword\": \"abcdef\",\n\t\"newName\" : \"Newname by Phuong\",\n\t\"newRole\" : \"user\",\n\t\"newAddress\": \"Tay Tuu\",\n\t\"newPhone\": \"12345687890\",\n\t\"newGender\": \"male\",\n\t\"newDob\": \"1998-03-23\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/users/5e6852945825d129e5e9038f",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "users",
+                                "5e6852945825d129e5e9038f"
+                            ]
+                        },
+                        "description": "Update a user's info by id (admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/users/5e4a38ec1608cf314999c34c",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "users",
+                                "5e4a38ec1608cf314999c34c"
+                            ]
+                        },
+                        "description": "Delete a user by id (admin only)"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "All routes for CRUD users (admin only)",
+            "protocolProfileBehavior": {}
+        },
+        {
+            "name": "Reviews",
+            "item": [
+                {
+                    "name": "Get All Reviews",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/reviews",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "reviews"]
+                        },
+                        "description": "Get all reviews in the databases"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Reviews Of A Product",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01/reviews",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "5e48f8970bedbc0e99c44f01",
+                                "reviews"
+                            ]
+                        },
+                        "description": "Get all reviews of a single product with product id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single Review",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/reviews/5e4ca688d7594d1dd1d7b451",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "reviews",
+                                "5e4ca688d7594d1dd1d7b451"
+                            ]
+                        },
+                        "description": "Get a single review by Id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create New Review",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"The flower is awesome!\",\n    \"text\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec viverra feugiat mauris id viverra. Duis luctus ex sed facilisis ultrices.\",\n    \"rating\": \"3\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/products/5e48f8970bedbc0e99c44f01/reviews",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "products",
+                                "5e48f8970bedbc0e99c44f01",
+                                "reviews"
+                            ]
+                        },
+                        "description": "Add a new review for a product in the database"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Single Review",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"rating\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/reviews/5e4ca688d7594d1dd1d7b451",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "reviews",
+                                "5e4ca688d7594d1dd1d7b451"
+                            ]
+                        },
+                        "description": "Update a single review with id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Single Review",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n\t\"rating\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/reviews/5e4cb0b31898f826aaa26ae7",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "reviews",
+                                "5e4cb0b31898f826aaa26ae7"
+                            ]
+                        },
+                        "description": "Delete a single review by id"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "All routes for reviews",
+            "protocolProfileBehavior": {}
+        },
+        {
+            "name": "Orders",
+            "item": [
+                {
+                    "name": "Get All Orders",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/orders",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "orders"]
+                        },
+                        "description": "Get all orders in the database (admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Orders of A Shop",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops/5e4406dfe67ba2619654062e/orders",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "shops",
+                                "5e4406dfe67ba2619654062e",
+                                "orders"
+                            ]
+                        },
+                        "description": "Get all orders of a shop from shopId"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Orders of A User",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/auth/5e4799e34768833202cb9904/history?limit=2&sort=total",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "auth",
+                                "5e4799e34768833202cb9904",
+                                "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "2"
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "total"
+                                }
+                            ]
+                        },
+                        "description": "Get all orders of a single user in the database\nSuported queries: \n- &limit=1, default is 5 orders\n- &sort=total, default is createdAt"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Single Order",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/orders/5e5921132947932aae3fdea4",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "orders",
+                                "5e5921132947932aae3fdea4"
+                            ]
+                        },
+                        "description": "Get a single order by id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add New Order",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"product\": \"5e48f8970bedbc0e99c44f02\",\n    \"shop\": \"5e4406dfe67ba2619654062e\",\n    \"quantity\": 2,\n    \"address\": \"Hanoi\",\n    \"phone\": \"123456789\",\n    \"total\": 10000\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/orders/checkout",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "orders", "checkout"]
+                        },
+                        "description": "Add a new order by json in body"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Single Order",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantity\": 30,\n    \"address\": \"Hoang Quoc Viet, Hanoi\",\n    \"phone\": \"123456789\",\n    \"total\": 12000\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/orders/5e59c7766654f11de6fb0d79",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "orders",
+                                "5e59c7766654f11de6fb0d79"
+                            ]
+                        },
+                        "description": "Update a single order by id"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Single Order",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantity\": 30,\n    \"address\": \"Hoang Quoc Viet, Hanoi\",\n    \"phone\": \"123456789\",\n    \"total\": 12000\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{URL}}/api/v1/orders/5e59c7766654f11de6fb0d79",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "orders",
+                                "5e59c7766654f11de6fb0d79"
+                            ]
+                        },
+                        "description": "Delete a single order"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "All routes for CRUD orders (user, seller and admin)",
+            "protocolProfileBehavior": {}
+        },
+        {
+            "name": "Stats",
+            "item": [
+                {
+                    "name": "Get Top Sold Products",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "670a8b37-54a1-467a-9f03-28c044acabfc",
+                                "exec": [""],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/stats/products?limit=1&sort=order",
+                            "host": ["{{URL}}"],
+                            "path": ["api", "v1", "stats", "products"],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "sort",
+                                    "value": "order"
+                                }
+                            ]
+                        },
+                        "description": "Get top 5 sold products in the database\nSupport queries: \n- ?limit=5\n- ?sort=order ---> sort by number of orders in database, otherwise sort by number of sold quantity"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Top Sold Product Of A Shop",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{TOKEN}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{URL}}/api/v1/shops/5e4406dfe67ba2619654062e/stats?limit=1",
+                            "host": ["{{URL}}"],
+                            "path": [
+                                "api",
+                                "v1",
+                                "shops",
+                                "5e4406dfe67ba2619654062e",
+                                "stats"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get top sold product of a single shop\nSupported queries: \n- ?limit=10, default is 5"
+                    },
+                    "response": []
+                }
+            ],
+            "protocolProfileBehavior": {}
+        }
+    ],
+    "protocolProfileBehavior": {}
 }

@@ -1,5 +1,5 @@
 services:
-    - name: tiki-api
+    - name: aumart-api
       env:
           - key: REDIS_HOST
             fromDatabase:
