@@ -1,6 +1,8 @@
 const Product = require("../models/Product");
 const Shop = require("../models/Shop");
 const SaleProduct = require("../models/SaleProduct");
+const Denunciation = require("../models/Denunciation");
+const slugify = require("slugify");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 
@@ -36,11 +38,8 @@ const getProductsOfShops = asyncHandler(async (req, res, next) => {
     const { shopId } = req.params;
     const products = await Product.find({ shop: shopId });
 
-    redis_client.setex(
-        `products_shop:${shopId}`,
-        process.env.CACHE_EXPIRE,
-        JSON.stringify(products)
-    );
+    // just cache in 5s to reduce the number of requests
+    redis_client.setex(`products_shop:${shopId}`, 5, JSON.stringify(products));
     return res.status(200).json({
         success: true,
         total: products.length,
@@ -64,12 +63,35 @@ const getProduct = asyncHandler(async (req, res, next) => {
                 404
             )
         );
-        s;
     }
 
+    // if product is sale product => get sale product
+    if (product.sale) {
+        const saleProduct = await SaleProduct.findOne({ product: product._id });
+        if (saleProduct) {
+            const product_ = {
+                ...product._doc,
+                sale: saleProduct,
+            };
+
+            redis_client.setex(
+                `productId:${req.params.id}`,
+                60,
+                JSON.stringify(product_)
+            );
+            return next(
+                res.status(200).json({
+                    success: true,
+                    data: product_,
+                })
+            );
+        }
+    }
+
+    // cached in redis in 1 minute
     redis_client.setex(
         `productId:${req.params.id}`,
-        process.env.CACHE_EXPIRE,
+        60,
         JSON.stringify(product)
     );
 
@@ -149,6 +171,12 @@ const updateProduct = asyncHandler(async (req, res, next) => {
             )
         );
     }
+
+    // update product slug
+    req.body.slug = slugify(req.body.name, {
+        lower: true,
+        remove: /[*+~.,/|()'"!:@]/g,
+    });
 
     product = await Product.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
@@ -240,6 +268,69 @@ const setSaleProduct = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         success: true,
         data: saleProduct,
+    });
+});
+
+// @desc    Get sale product
+// @route   GET /api/v1/products/sale
+// @access  Public
+const getSaleProduct = asyncHandler(async (req, res, next) => {
+    // Get sale products with sale=true and beginAt > today
+    // Just get products in one week
+    const today = new Date();
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    // populate with all fields of product
+    const saleProducts = await SaleProduct.find({
+        sale: true,
+        beginAt: { $lte: nextWeek },
+    }).populate({
+        path: "product",
+        select: "", // select all fields
+        populate: {
+            path: "shop",
+            select: "name",
+        },
+    });
+
+    // if today > (beginAt + 24h) => delete sale product
+    for (const prod of saleProducts) {
+        const { beginAt } = prod;
+        const endDate = new Date(beginAt);
+        endDate.setDate(endDate.getDate() + 1);
+
+        if (today > endDate) {
+            // Set product status to false
+            await Product.findByIdAndUpdate(prod.product._id, { sale: false });
+
+            // Delete sale product
+            await SaleProduct.findByIdAndDelete(prod._id);
+
+            // remove product from saleProducts
+            saleProducts.splice(saleProducts.indexOf(prod), 1);
+        }
+    }
+
+    // cached in redis in 2 minutes
+    const getUrl = url.parse(req.url, true).href;
+    redis_client.setex(
+        `sale_products:${getUrl}`,
+        120,
+        JSON.stringify({
+            total: saleProducts.length,
+            pagination: {
+                count: saleProducts.length,
+                next: null,
+                prev: null,
+            },
+            data: saleProducts,
+        })
+    );
+
+    res.status(200).json({
+        success: true,
+        data: saleProducts,
     });
 });
 
@@ -366,6 +457,49 @@ const productPhotoUpload = asyncHandler(async (req, res, next) => {
     }
 });
 
+// @desc    Report product
+// @route   POST /api/v1/products/:id/report
+// @access  Private
+const reportProduct = asyncHandler(async (req, res, next) => {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+        return next(
+            new ErrorResponse(`Không tìm thấy sản phẩm ${req.params.id}`, 404)
+        );
+    }
+
+    // check if user already reported this product
+    const check = await Denunciation.findOne({
+        product: req.params.id,
+        user: req.user.id,
+    });
+
+    if (check) {
+        return next(
+            new ErrorResponse(
+                `Bạn đã báo cáo sản phẩm này rồi, vui lòng chờ xử lý!`,
+                400
+            )
+        );
+    }
+
+    // add denunciation
+    const denunciationData = {
+        reason: req.body.reason,
+        description: req.body.description,
+        product: req.params.id,
+        user: req.user.id,
+    };
+
+    const denunciation = await Denunciation.create(denunciationData);
+
+    res.status(200).json({
+        success: true,
+        data: denunciation,
+    });
+});
+
 module.exports = {
     getProducts,
     getProductsOfShops,
@@ -373,6 +507,8 @@ module.exports = {
     addProduct,
     updateProduct,
     setSaleProduct,
+    getSaleProduct,
     deleteProduct,
     productPhotoUpload,
+    reportProduct,
 };

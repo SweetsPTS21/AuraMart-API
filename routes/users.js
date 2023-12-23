@@ -45,7 +45,7 @@ router
 router
     .route("/:userId/address")
     .get(getUserAddress)
-    .post(protect, authorize("user", "admin"), addAddress);
+    .post(protect, authorize("user", "seller", "admin"), addAddress);
 
 router.route("/:userId/orders").get(getUserOrders);
 

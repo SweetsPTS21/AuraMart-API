@@ -38,9 +38,11 @@ const getTopSoldProduct = asyncHandler(async (req, res, next) => {
     });
 
     result.forEach((item) => {
-        item.name = item._id.name;
-        item.shop = item._id.shop.name;
-        item._id = item._id._id;
+        if (item._id) {
+            item.name = item._id._doc.name;
+            item.shop = item._id._doc.shop.name;
+            item._id = item._id._doc._id;
+        }
     });
 
     res.status(200).json({
