@@ -3,14 +3,13 @@ const {
     sendBuildRecommendation,
     getRecommendation,
     checkCachedRecommend,
-    checkCacheData,
 } = require("../controller/recommend");
 
 const { protect, authorize } = require("../middleware/auth");
 
 router
     .route("/build")
-    .get(protect, authorize("admin"), checkCacheData, sendBuildRecommendation);
+    .post(protect, authorize("admin"), sendBuildRecommendation);
 
 router.route("/user/:userId").get(checkCachedRecommend, getRecommendation);
 

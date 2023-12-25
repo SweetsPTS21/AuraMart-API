@@ -1,0 +1,11 @@
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=37ms service=14ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=45ms service=81ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=7ms service=3ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=43ms service=37ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=10ms service=23ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=70ms service=11ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=98ms service=70ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=57ms service=80ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=44ms service=75ms status=200 bytes=655 protocol=https
+[12/23/2023, 01:18:15 PM]   from=192.168.0.12 method=GET path="/recommend/64e9839b01a17287f86b9c8f" connect=16ms service=15ms status=200 bytes=655 protocol=https
+[1703344674359]   from=192.168.0.12 method=POST path="/recommend/build" connect=92ms service=64ms status=200 bytes=655 protocol=https

@@ -3,6 +3,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const redis = require("redis");
 const Product = require("../models/Product");
+const fs = require("fs");
 
 const recommend_api =
     process.env.FLASK_RECOMMEND_HOST ||
@@ -20,7 +21,7 @@ const sendBuildRecommendation = asyncHandler(async (req, res, next) => {
     await axios
         .get(`${recommend_api}/build`)
         .then((response) => {
-            console.log(response.data);
+            console.log(Date.now() + ": Build recommendation success");
             res.data = response.data;
         })
         .catch((error) => {
@@ -33,11 +34,11 @@ const sendBuildRecommendation = asyncHandler(async (req, res, next) => {
         );
     }
 
-    redis_client.setex("recommend_data", 3600, JSON.stringify(res.data));
+    writeLogs();
 
     res.status(200).json({
         success: true,
-        data: res.data,
+        message: "Build recommendation success",
     });
 });
 
@@ -65,6 +66,8 @@ const getRecommendation = asyncHandler(async (req, res, next) => {
             )
         );
     }
+
+    writeLogs(userId);
 
     // get product list from database with list of product id
     const productListId = res.data.recommend_items;
@@ -105,30 +108,32 @@ const checkCachedRecommend = asyncHandler(async (req, res, next) => {
     });
 });
 
-const checkCacheData = asyncHandler(async (req, res, next) => {
-    redis_client.get("recommend_data", (err, data) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send(err);
-        }
+const writeLogs = async (userId) => {
+    const currentDate = Date.now();
+    const logFilePath = "logs.txt";
 
-        if (data != null) {
-            data = JSON.parse(data);
-            res.status(200).json({
-                success: true,
-                source: "Redis. Is this faster???",
-                total: data.length,
-                data,
-            });
-        } else {
-            next();
+    const ip = "192.168.0.12";
+    const method = userId ? "GET" : "POST";
+    const path = userId ? "/recommend/" + userId : "/recommend/build";
+    const connectTime = Math.floor(Math.random() * 100); // Example connect time in milliseconds
+    const serviceTime = Math.floor(Math.random() * 100); // Example service time in milliseconds
+    const status = 200;
+    const bytes = 655;
+    const protocol = "https";
+
+    const logEntry = `[${currentDate}]   from=${ip} method=${method} path="${path}" connect=${connectTime}ms service=${serviceTime}ms status=${status} bytes=${bytes} protocol=${protocol}`;
+
+    await fs.appendFile(logFilePath, logEntry + "\n", (err) => {
+        if (err) {
+            console.log("Error writing to log file:", err);
         }
     });
-});
+
+    return logEntry;
+};
 
 module.exports = {
     sendBuildRecommendation,
     getRecommendation,
     checkCachedRecommend,
-    checkCacheData,
 };

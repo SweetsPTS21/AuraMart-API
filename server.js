@@ -88,6 +88,7 @@ const vouchers = require("./routes/vouchers");
 const stocks = require("./routes/stocks");
 const recommend = require("./routes/recommend");
 const payment = require("./routes/payment");
+const settings = require("./routes/settings");
 app.use("/api/v1/shops", shops);
 app.use("/api/v1/products", products);
 app.use("/api/v1/auth", auth);
@@ -101,6 +102,7 @@ app.use("/api/v1/vouchers", vouchers);
 app.use("/api/v1/stocks", stocks);
 app.use("/api/v1/recommend", recommend);
 app.use("/api/v1/payment", payment);
+app.use("/api/v1/settings", settings);
 // Error handler middleware
 app.use(errorHandler);
 
