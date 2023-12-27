@@ -99,16 +99,6 @@ const registerShop = asyncHandler(async (req, res, next) => {
         );
     }
 
-    // Change user role to seller
-    const user = await User.findByIdAndUpdate(
-        req.user.id,
-        { role: "seller" },
-        {
-            new: true,
-            runValidators: true,
-        }
-    );
-
     const shop = await Shop.create(req.body);
 
     // Create ghn shop
@@ -184,6 +174,16 @@ const approveShop = asyncHandler(async (req, res, next) => {
         }
     );
 
+    //chage user role to seller
+    await User.findByIdAndUpdate(
+        shop.user,
+        { role: "seller" },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+
     res.status(200).json({
         success: true,
         shopStatus: "active",
@@ -208,7 +208,6 @@ const reportShop = asyncHandler(async (req, res, next) => {
         user: req.user.id,
     });
 
-
     if (check) {
         return next(
             new ErrorResponse(
@@ -232,7 +231,6 @@ const reportShop = asyncHandler(async (req, res, next) => {
         data: denunciation,
     });
 });
-
 
 // @desc    Update shop
 // @route   PUT /api/v1/shops/:id
