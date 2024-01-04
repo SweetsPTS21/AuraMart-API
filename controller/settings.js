@@ -1,6 +1,7 @@
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const fs = require("fs");
+const Banner = require("../models/Banner");
 
 // @desc   Get recommended logs
 // @route  GET /api/v1/systems/logs
@@ -31,7 +32,40 @@ const clearLogs = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @dest    Set system banners
+// @route   POST /api/v1/systems/banners
+// @access  Private/Admin
+const setBanners = asyncHandler(async (req, res, next) => {
+    const banners = req.body;
+
+    if (!banners) {
+        return next(new ErrorResponse("Please provide banners", 400));
+    }
+
+    const banners_ = await Banner.create(req.body);
+
+    return res.status(200).json({
+        success: true,
+        banners: banners_,
+    });
+});
+
+// @dest    Get all system banners
+// @route   GET /api/v1/systems/banners
+// @access  Private/Admin
+const getBanners = asyncHandler(async (req, res, next) => {
+    const banners = await Banner.find();
+
+    return res.status(200).json({
+        success: true,
+        banners,
+        length: banners.length,
+    });
+});
+
 module.exports = {
     getRecommendedLogs,
     clearLogs,
+    getBanners,
+    setBanners,
 };
