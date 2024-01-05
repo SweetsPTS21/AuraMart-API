@@ -14,6 +14,10 @@ const BannerSchema = new mongoose.Schema(
         other: {
             type: [String],
         },
+        using: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         toJSON: { virtuals: true },

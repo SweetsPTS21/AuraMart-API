@@ -42,11 +42,20 @@ const setBanners = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse("Please provide banners", 400));
     }
 
+    // set current using to true
+    banners.using = true;
+
     const banners_ = await Banner.create(req.body);
+
+    // set all other banners to false
+    await Banner.updateMany(
+        { _id: { $ne: banners_._id } },
+        { $set: { using: false } }
+    );
 
     return res.status(200).json({
         success: true,
-        banners: banners_,
+        data: banners_,
     });
 });
 
@@ -54,11 +63,12 @@ const setBanners = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/systems/banners
 // @access  Private/Admin
 const getBanners = asyncHandler(async (req, res, next) => {
+    // Get banner with using = true
     const banners = await Banner.find();
 
     return res.status(200).json({
         success: true,
-        banners,
+        data: banners,
         length: banners.length,
     });
 });
