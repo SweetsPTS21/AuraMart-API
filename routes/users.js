@@ -20,7 +20,6 @@ const { getUserOrders } = require("../controller/orders");
 
 const User = require("../models/User");
 const advancedResults = require("../middleware/advancedResults");
-const addressRouter = require("./address");
 
 const { protect, authorize } = require("../middleware/auth");
 const { getUserAddress, addAddress } = require("../controller/address");
@@ -45,13 +44,13 @@ router
 router
     .route("/:userId/address")
     .get(getUserAddress)
-    .post(protect, authorize("user", "seller", "admin"), addAddress);
+    .post(authorize("user", "seller", "admin"), addAddress);
 
 router.route("/:userId/orders").get(getUserOrders);
 
 router
     .route("/:userId/shop")
-    .get(protect, authorize("admin", "seller"), getUserShop);
+    .get(authorize("admin", "seller"), getUserShop);
 
 router
     .route("/:userId/vouchers")
@@ -60,8 +59,8 @@ router
 router
     .route("/:userId/vouchers/:id")
     .get(checkOwnerVoucher)
-    .post(protect, authorize("user", "admin"), addUserVoucher);
+    .post(authorize("user", "admin"), addUserVoucher);
 
-router.route("/:userId/reviews").get(protect, getUserReviews);
+router.route("/:userId/reviews").get(getUserReviews);
 
 module.exports = router;

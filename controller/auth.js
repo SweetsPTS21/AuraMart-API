@@ -34,6 +34,12 @@ const sendTokenResponse = (user, statusCode, res) => {
 const register = asyncHandler(async (req, res, next) => {
     const { name, email, password, role, gender, dob } = req.body;
 
+    // Check if user existes in db
+    const existed = await User.findOne({ email });
+    if (existed) {
+        return next(new ErrorResponse(`User with email ${email} already exists`, 400));
+    }
+
     // Create user
     const user = await User.create({
         name,
@@ -54,17 +60,22 @@ const register = asyncHandler(async (req, res, next) => {
     // Store a user-copy on Chat Engine!
     // Docs at rest.chatengine.io
     try {
-        const r = await axios.post(
+        const response = await axios.post(
             "https://api.chatengine.io/users/",
             { username, secret, email, first_name, last_name },
             { headers: { "Private-Key": chatEngineKey } }
         );
-        const data = {
-            status: r.status,
-            data: r.data,
-            message: "User created on Chat Engine",
+        if (response && response.data) {
+            const data = {
+                status: response.status,
+                data: response.data,
+                message: "User created on Chat Engine",
+            }
+            console.log(data);
         }
-        console.log(data);
+        else {
+            res.error = "Failed to create user on Chat Engine. Check the credentials!";
+        }
         sendTokenResponse(user, 200, res);
     } catch (e) {
         return res.status(e.response.status).json(e.response.data);

@@ -2,17 +2,23 @@ const advancedResults = (model, populate) => async (req, res, next) => {
     const reqQuery = { ...req.query };
 
     // Select only field from query
-    const removeFields = ["select", "sort", "page", "limit"];
+    const removeFields = ["select", "sort", "page", "limit", "search"];
     // Remove removeFields from reqQuery
     removeFields.forEach((item) => delete reqQuery[item]);
 
     let queryString = JSON.stringify(reqQuery);
 
-    // Add $ to query string --> it become mongodb query
+    // Add $ to query string --> it becomes a MongoDB query
     queryString = queryString.replace(
         /\b(gt|gte|lt|lte|in)\b/g,
         (match) => `$${match}`
     );
+
+    // If there is a 'search' parameter, treat it as a special case for email search
+    if (req.query.search) {
+        const emailQuery = { email: { $regex: req.query.search, $options: 'i' } };
+        queryString = JSON.stringify({ ...JSON.parse(queryString), ...emailQuery });
+    }
 
     let query = model.find(JSON.parse(queryString));
 
@@ -72,5 +78,6 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
     next();
 };
+
 
 module.exports = advancedResults;

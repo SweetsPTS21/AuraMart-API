@@ -84,6 +84,7 @@ const deleteUser = asyncHandler(async (req, res, next) => {
     });
 });
 
+
 module.exports = {
     getUsers,
     getUser,

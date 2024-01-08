@@ -58,13 +58,31 @@ const getRecommendation = asyncHandler(async (req, res, next) => {
             console.error("Error:", error.message);
         });
 
-    if (!res.data) {
-        return next(
-            new ErrorResponse(
-                `No recommendation for user with id ${userId}`,
-                404
-            )
+    
+    // if no recommendation for user with id userId
+    // return random 30 products with quantity > soldProduct
+    if (res.data.error) {
+        const totalProducts = await Product.countDocuments();
+
+        // Generate 30 random indices
+        const randomIndices = Array.from({ length: 30 }, () => Math.floor(Math.random() * totalProducts));
+
+        // Retrieve products using the random indices
+        const randomProducts = await Product.find().skip(randomIndices[0]).limit(30);
+
+        // cache the response in Redis for 1 hour
+        redis_client.setex(
+            `recommend_user:${userId}`,
+            3600,
+            JSON.stringify(randomProducts)
         );
+
+        return res.status(200).json({
+            success: true,
+            message: "Use random products for this user",
+            data: randomProducts,
+            length: randomProducts.length,
+        });
     }
 
     writeLogs(userId);
