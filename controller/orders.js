@@ -61,7 +61,7 @@ const getUserOrders = asyncHandler(async (req, res, next) => {
         })
         .sort("-" + sortBy)
         .limit(limit);
-    
+
     // get all order details by order id
     orders = await Promise.all(
         orders.map(async (order) => {
@@ -77,7 +77,7 @@ const getUserOrders = asyncHandler(async (req, res, next) => {
             };
         })
     );
-    
+
     req.body.user = req.user.id;
 
     // Allow user to get his/her history only
@@ -121,10 +121,13 @@ const getOrder = asyncHandler(async (req, res, next) => {
 const addOrder = asyncHandler(async (req, res, next) => {
     req.body.user = req.user.id;
 
-    const orders = req.body
+    const orders = req.body;
+
+    const orderIds = [];
 
     orders.forEach(async (order) => {
-        const order_ = await Order.create({...order, user: req.body.user});
+        const order_ = await Order.create({ ...order, user: req.body.user });
+        orderIds.push(order_._id);
 
         // Create order detail
         order.products.forEach(async (product) => {
@@ -151,121 +154,29 @@ const addOrder = asyncHandler(async (req, res, next) => {
                 await stockProduct.save();
             }
         });
-    })
 
-    // const ghnData = {
-    //     payment_type_id: 2,
-    //     note: "This is note",
-    //     required_note: "KHONGCHOXEMHANG",
-    //     from_name: shop.name,
-    //     from_phone: shop.phone,
-    //     from_address: shop.address,
-    //     from_ward_name: "Phường 14",
-    //     from_district_name: "Quận 10",
-    //     from_province_name: "HCM",
-    //     return_phone: "0332190444",
-    //     return_address: "39 NTT",
-    //     return_district_id: null,
-    //     return_ward_code: "",
-    //     client_order_code: "",
-    //     to_name: order.receiver,
-    //     to_phone: order.phone,
-    //     to_address: order.address,
-    //     to_ward_code: "20308",
-    //     to_district_id: 1444,
-    //     cod_amount: order.total,
-    //     content: "This is content",
-    //     weight: 200,
-    //     length: 1,
-    //     width: 19,
-    //     height: 10,
-    //     pick_station_id: 1444,
-    //     deliver_station_id: null,
-    //     insurance_value: 4000000,
-    //     service_id: 0,
-    //     service_type_id: 2,
-    //     coupon: null,
-    //     pick_shift: [2],
-    //     items: [
-    //         {
-    //             name: product.name,
-    //             code: "Polo123",
-    //             quantity: order.quantity,
-    //             price: product.price,
-    //             length: 12,
-    //             width: 12,
-    //             height: 12,
-    //             weight: 1200,
-    //             category: {
-    //                 level1: "Áo",
-    //             },
-    //         },
-    //     ],
-    // };
+        // Create GHN order
+        const ghnOrderCode = await createGHNOrder(order);
+        if (ghnOrderCode === 0) {
+            return next(
+                new ErrorResponse(
+                    `Cannot create GHN order for order ${order.id}`,
+                    400
+                )
+            );
+        }
 
-    // if (order.shippingMethod === "GHN") {
-    //     const ghnResponse = await axios
-    //         .post(ghnUrl + "/shipping-order/create", ghnData, {
-    //             headers: {
-    //                 Token: ghnToken,
-    //                 ShopId: shop.ghnShopId,
-    //             },
-    //         })
-    //         .catch((err) => {
-    //             const error = err.response.data;
-    //             console.log({ code: error.code, message: error.message });
-    //             return next(
-    //                 new ErrorResponse(
-    //                     `Error when create GHN order: ${error.message}`,
-    //                     400
-    //                 )
-    //             );
-    //         });
-
-    //     if (!ghnResponse || ghnResponse.data.code !== 200) {
-    //         return next(new ErrorResponse(`Error when create GHN order`, 400));
-    //     }
-
-    //     order.ghnOrderCode = ghnResponse.data.data.order_code;
-    // }
-
-    // Create order
-    // const order_ = await Order.create(order);
-
-    // Create order detail
-    // products.forEach(async (product) => {
-    //     const orderDetail = {
-    //         order: order_._id,
-    //         product: product.product,
-    //         shop: product.shop,
-    //         quantity: product.quantity,
-    //         color: product.color,
-    //         total: product.total,
-    //         note: product.note,
-    //     };
-
-    //     await OrderDetail.create(orderDetail);
-
-    //     // Update product sold quantity
-    //     const product_ = await Product.findById(product.product);
-    //     product_.soldQuantity += product.quantity;
-    //     await product_.save();
-
-    //     // Update stock product quantity
-    //     const stockProduct = await StockProduct.findOne({
-    //         product: product.product,
-    //         shop: product.shop,
-    //     });
-
-    //     if (stockProduct) {
-    //         stockProduct.quantity -= product.quantity;
-    //         await stockProduct.save();
-    //     }
-    // });
+        // Update order with GHN order code
+        order_.ghnOrderCode = ghnOrderCode;
+        await order_.save();
+    });
 
     res.status(201).json({
         success: true,
-        data: orders,
+        data: {
+            orderIds: orderIds,
+            orders: orders,
+        },
     });
 });
 
@@ -405,6 +316,89 @@ const confirmReceivedOrder = asyncHandler(async (req, res, next) => {
         data: order,
     });
 });
+
+const createGHNOrder = async (order) => {
+    const shop = await Shop.findById(order.shop);
+    const product = await Product.findById(order.products[0].product);
+
+    // total product price in order
+    const total = order.products.reduce(
+        (total, product) => total + product.total,
+        0
+    );
+
+    const items = order.products.map((prod) => ({
+        name: product.name,
+        code: "Polo123",
+        quantity: prod.quantity,
+        price: prod.total,
+        length: 12,
+        width: 12,
+        height: 12,
+        weight: 1200,
+        category: {
+            level1: prod.category,
+        },
+    }));
+
+    const ghnData = {
+        payment_type_id: 2,
+        note: "This is note",
+        required_note: "KHONGCHOXEMHANG",
+        from_name: shop.name,
+        from_phone: shop.phone,
+        from_address: shop.address,
+        from_ward_name: "Phường 14",
+        from_district_name: "Quận 10",
+        from_province_name: "HCM",
+        return_phone: "0332190444",
+        return_address: "39 NTT",
+        return_district_id: null,
+        return_ward_code: "",
+        client_order_code: "",
+        to_name: order.receiver,
+        to_phone: order.phone,
+        to_address: order.address,
+        to_ward_code: "20308",
+        to_district_id: 1444,
+        cod_amount: total || 100000,
+        content: "This is content",
+        weight: 200,
+        length: 1,
+        width: 19,
+        height: 10,
+        pick_station_id: 1444,
+        deliver_station_id: null,
+        insurance_value: 4000000,
+        service_id: 0,
+        service_type_id: 2,
+        coupon: null,
+        pick_shift: [2],
+        items: items,
+    };
+
+    if (order.shippingMethod === "GHN") {
+        const ghnResponse = await axios
+            .post(ghnUrl + "/shipping-order/create", ghnData, {
+                headers: {
+                    Token: ghnToken,
+                    ShopId: shop.ghnShopId,
+                },
+            })
+            .catch((err) => {
+                const error = err.response.data;
+                console.log({ code: error.code, message: error.message });
+                return 0;
+            });
+
+        if (!ghnResponse || ghnResponse.data.code !== 200) {
+            return 0;
+        }
+
+        order.ghnOrderCode = ghnResponse.data.data.order_code;
+    }
+    return order.ghnOrderCode;
+};
 
 module.exports = {
     getOrders,

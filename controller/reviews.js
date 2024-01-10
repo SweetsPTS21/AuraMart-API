@@ -31,7 +31,7 @@ const getProductReviews = asyncHandler(async (req, res, next) => {
     // Cache the result in Redis for 1 hour to improve performance
     redis_client.setex(
         `reviews_product:${productId}`,
-        3600,
+        process.env.CACHE_EXPIRE || 3600,
         JSON.stringify(reviews)
     );
 

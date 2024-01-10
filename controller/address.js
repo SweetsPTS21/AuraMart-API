@@ -28,7 +28,11 @@ const getUserAddress = asyncHandler(async (req, res, next) => {
     });
 
     // Cache the result in Redis for 1 hour to improve performance
-    redis_client.setex(`address_user:${userId}`, 3600, JSON.stringify(address));
+    redis_client.setex(
+        `address_user:${userId}`,
+        process.env.CACHE_EXPIRE || 3600,
+        JSON.stringify(address)
+    );
 
     return res.status(200).json({
         success: true,

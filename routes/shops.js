@@ -47,10 +47,9 @@ const { protect, authorize } = require("../middleware/auth");
 const { checkCachedShopProducts } = require("../middleware/redisProducts");
 
 // Include other resource routers
-const productRouter = require("./products");
 const orderRouter = require("./orders");
 const statRouter = require("./stats");
-const { get } = require("mongoose");
+
 // Reroute into other resoure routers
 router.use("/:shopId/orders", orderRouter);
 router.use("/:shopId/stats", statRouter);

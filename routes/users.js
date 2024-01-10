@@ -48,9 +48,7 @@ router
 
 router.route("/:userId/orders").get(getUserOrders);
 
-router
-    .route("/:userId/shop")
-    .get(authorize("admin", "seller"), getUserShop);
+router.route("/:userId/shop").get(getUserShop);
 
 router
     .route("/:userId/vouchers")

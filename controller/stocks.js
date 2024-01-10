@@ -56,7 +56,11 @@ const getShopStocks = asyncHandler(async (req, res, next) => {
     }
 
     // Cache the result in Redis for 1 hour to improve performance
-    redis_client.setex(`stocks_shop:${shopId}`, 3600, JSON.stringify(stocks));
+    redis_client.setex(
+        `stocks_shop:${shopId}`,
+        process.env.CACHE_EXPIRE || 3600,
+        JSON.stringify(stocks)
+    );
 
     res.status(200).json({
         success: true,

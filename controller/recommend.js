@@ -2,6 +2,7 @@ const axios = require("axios");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const redis = require("redis");
+const url = require("url");
 const Product = require("../models/Product");
 const fs = require("fs");
 
@@ -44,7 +45,7 @@ const sendBuildRecommendation = asyncHandler(async (req, res, next) => {
 
 // @desc      Get recommendation for a user
 // @route     GET /api/v1/recommend/:userId
-// @access    Private (admin only)
+// @access    Public
 const getRecommendation = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
 
@@ -58,22 +59,25 @@ const getRecommendation = asyncHandler(async (req, res, next) => {
             console.error("Error:", error.message);
         });
 
-    
     // if no recommendation for user with id userId
     // return random 30 products with quantity > soldProduct
     if (res.data.error) {
         const totalProducts = await Product.countDocuments();
 
         // Generate 30 random indices
-        const randomIndices = Array.from({ length: 30 }, () => Math.floor(Math.random() * totalProducts));
+        const randomIndices = Array.from({ length: 30 }, () =>
+            Math.floor(Math.random() * totalProducts)
+        );
 
         // Retrieve products using the random indices
-        const randomProducts = await Product.find().skip(randomIndices[0]).limit(30);
+        const randomProducts = await Product.find()
+            .skip(randomIndices[0])
+            .limit(30);
 
         // cache the response in Redis for 1 hour
         redis_client.setex(
             `recommend_user:${userId}`,
-            3600,
+            process.env.CACHE_EXPIRE || 3600,
             JSON.stringify(randomProducts)
         );
 
@@ -94,7 +98,7 @@ const getRecommendation = asyncHandler(async (req, res, next) => {
     // cache the response in Redis for 1 hour
     redis_client.setex(
         `recommend_user:${userId}`,
-        3600,
+        process.env.CACHE_EXPIRE || 3600,
         JSON.stringify(productList)
     );
 
@@ -104,10 +108,64 @@ const getRecommendation = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @desc      Get common recommendation
+// @route     GET /api/v1/recommend/common
+// @access    Public
+const getCommonRecommendation = asyncHandler(async (req, res, next) => {
+    const getUrl = url.parse(req.url, true).href;
+
+    const totalProducts = await Product.countDocuments();
+
+    // Generate 30 random indices
+    const randomIndices = Array.from({ length: 30 }, () =>
+        Math.floor(Math.random() * totalProducts)
+    );
+
+    // Retrieve products using the random indices
+    const randomProducts = await Product.find()
+        .skip(randomIndices[0])
+        .limit(30);
+
+    // cache the response in Redis for 1 hour
+    redis_client.setex(
+        `recommend_common:${getUrl}`,
+        process.env.CACHE_EXPIRE || 3600,
+        JSON.stringify(randomProducts)
+    );
+
+    return res.status(200).json({
+        success: true,
+        message: "Use random recommend products",
+        data: randomProducts,
+        length: randomProducts.length,
+    });
+});
+
 const checkCachedRecommend = asyncHandler(async (req, res, next) => {
     const { userId } = req.params;
 
     redis_client.get(`recommend_user:${userId}`, (err, data) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+        if (data != null) {
+            data = JSON.parse(data);
+            res.status(200).json({
+                success: true,
+                source: "Redis. Is this faster???",
+                total: data.length,
+                data,
+            });
+        } else {
+            next();
+        }
+    });
+});
+
+const checkCachedCommonRecommend = asyncHandler(async (req, res, next) => {
+    const getUrl = url.parse(req.url, true).href;
+    redis_client.get(`recommend_common:${getUrl}`, (err, data) => {
         if (err) {
             console.log(err);
             res.status(500).send(err);
@@ -154,4 +212,6 @@ module.exports = {
     sendBuildRecommendation,
     getRecommendation,
     checkCachedRecommend,
+    getCommonRecommendation,
+    checkCachedCommonRecommend,
 };
