@@ -57,7 +57,7 @@ router
 router
     .route("/:userId/vouchers/:id")
     .get(checkOwnerVoucher)
-    .post(authorize("user", "admin"), addUserVoucher);
+    .post(authorize("user", "admin", "seller"), addUserVoucher);
 
 router.route("/:userId/reviews").get(getUserReviews);
 

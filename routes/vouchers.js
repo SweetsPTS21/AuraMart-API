@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const { protect, authorize } = require("../middleware/auth");
 const advancedResults = require("../middleware/advancedResults");
 
 const Voucher = require("../models/Voucher");

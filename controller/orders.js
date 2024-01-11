@@ -48,10 +48,10 @@ const getOrders = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    Get all orders of an user
-// @route   GET /api/v1/auth/:userId/orders
+// @route   GET /api/v1/users/:userId/orders
 // @access  Private: User-Admin
 const getUserOrders = asyncHandler(async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 100;
     const sortBy = req.query.sort || "createdAt";
 
     let orders = await Order.find({ user: req.params.userId })
@@ -119,15 +119,15 @@ const getOrder = asyncHandler(async (req, res, next) => {
 // @route   POST /api/v1/checkout
 // @access  Private
 const addOrder = asyncHandler(async (req, res, next) => {
-    req.body.user = req.user.id;
+    const user = req.user.id;
 
     const orders = req.body;
 
-    const orderIds = [];
+    req.body.ids = [];
 
-    orders.forEach(async (order) => {
-        const order_ = await Order.create({ ...order, user: req.body.user });
-        orderIds.push(order_._id);
+    const resp = await orders.forEach(async (order) => {
+        const order_ = await Order.create({ ...order, user: user });
+        req.body.ids.push(order_._id);
 
         // Create order detail
         order.products.forEach(async (product) => {
@@ -169,14 +169,14 @@ const addOrder = asyncHandler(async (req, res, next) => {
         // Update order with GHN order code
         order_.ghnOrderCode = ghnOrderCode;
         await order_.save();
-    });
 
-    res.status(201).json({
-        success: true,
-        data: {
-            orderIds: orderIds,
-            orders: orders,
-        },
+        res.status(201).json({
+            success: true,
+            data: {
+                orderIds: req.body.ids,
+                orders: orders,
+            },
+        });
     });
 });
 
@@ -257,7 +257,10 @@ const cancelOrder = asyncHandler(async (req, res, next) => {
     }
 
     // Check if order is in the right state
-    if (order.currentState !== "Ordered Successfully") {
+    if (
+        order.currentState !== "Ordered Successfully" &&
+        order.currentState !== "Getting Product"
+    ) {
         return next(
             new ErrorResponse(
                 `Cannot cancel order with current state ${order.currentState}`,

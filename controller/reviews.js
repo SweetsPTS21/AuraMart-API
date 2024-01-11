@@ -118,7 +118,6 @@ const addReview = asyncHandler(async (req, res, next) => {
     // Check if the user has already bought the product
     const existingOrder = await Order.findOne({
         user: req.user.id,
-        product: req.params.productId,
     });
 
     if (!existingOrder) {
