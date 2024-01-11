@@ -68,7 +68,7 @@ const getUserOrders = asyncHandler(async (req, res, next) => {
             let orderDetails = await OrderDetail.find({ order: order._id })
                 .populate({
                     path: "product",
-                    select: "name slug photo price discount",
+                    select: "name slug photo price discount colors quantity soldQuantity",
                 })
                 .sort("-createdAt");
             return {
@@ -123,60 +123,58 @@ const addOrder = asyncHandler(async (req, res, next) => {
 
     const orders = req.body;
 
-    req.body.ids = [];
+    const returnData = await Promise.all(
+        orders.map(async (order) => {
+            const order_ = await Order.create({ ...order, user: user });
 
-    const resp = await orders.forEach(async (order) => {
-        const order_ = await Order.create({ ...order, user: user });
-        req.body.ids.push(order_._id);
+            // Create order detail
+            order.products.forEach(async (product) => {
+                const orderDetail = {
+                    order: order_._id,
+                    ...product,
+                };
 
-        // Create order detail
-        order.products.forEach(async (product) => {
-            const orderDetail = {
-                order: order_._id,
-                ...product,
-            };
+                await OrderDetail.create(orderDetail);
 
-            await OrderDetail.create(orderDetail);
+                // Update product sold quantity
+                const product_ = await Product.findById(product.product);
+                product_.soldQuantity += product.quantity;
+                await product_.save();
 
-            // Update product sold quantity
-            const product_ = await Product.findById(product.product);
-            product_.soldQuantity += product.quantity;
-            await product_.save();
+                // Update stock product quantity
+                const stockProduct = await StockProduct.findOne({
+                    product: product.product,
+                    shop: product.shop,
+                });
 
-            // Update stock product quantity
-            const stockProduct = await StockProduct.findOne({
-                product: product.product,
-                shop: product.shop,
+                if (stockProduct) {
+                    stockProduct.quantity -= product.quantity;
+                    await stockProduct.save();
+                }
             });
 
-            if (stockProduct) {
-                stockProduct.quantity -= product.quantity;
-                await stockProduct.save();
+            // Create GHN order
+            const ghnOrderCode = await createGHNOrder(order);
+            if (ghnOrderCode === 0) {
+                return next(
+                    new ErrorResponse(
+                        `Cannot create GHN order for order ${order.id}`,
+                        400
+                    )
+                );
             }
-        });
 
-        // Create GHN order
-        const ghnOrderCode = await createGHNOrder(order);
-        if (ghnOrderCode === 0) {
-            return next(
-                new ErrorResponse(
-                    `Cannot create GHN order for order ${order.id}`,
-                    400
-                )
-            );
-        }
+            // Update order with GHN order code
+            order_.ghnOrderCode = ghnOrderCode;
+            await order_.save();
 
-        // Update order with GHN order code
-        order_.ghnOrderCode = ghnOrderCode;
-        await order_.save();
+            return order_;
+        })
+    );
 
-        res.status(201).json({
-            success: true,
-            data: {
-                orderIds: req.body.ids,
-                orders: orders,
-            },
-        });
+    res.status(200).json({
+        success: true,
+        data: returnData,
     });
 });
 
@@ -259,7 +257,8 @@ const cancelOrder = asyncHandler(async (req, res, next) => {
     // Check if order is in the right state
     if (
         order.currentState !== "Ordered Successfully" &&
-        order.currentState !== "Getting Product"
+        order.currentState !== "Getting Product" &&
+        order.currentState !== "Packing"
     ) {
         return next(
             new ErrorResponse(
