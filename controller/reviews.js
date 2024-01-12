@@ -5,6 +5,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const redis = require("redis");
 const Ratings = require("../models/Ratings");
+const fs = require("fs");
 
 const redis_client = redis.createClient({
     host: process.env.REDIS_HOST || "127.0.0.1",
@@ -203,6 +204,35 @@ const deleteReview = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @desc    Bulk insert reviews
+// @route   POST /api/v1/reviews/bulk
+// @access  Private
+const bulkReviews = asyncHandler(async (req, res, next) => {
+    const filePath = "table1.json";
+    const data = await fs.promises.readFile(filePath, "utf8");
+
+    // Parse the JSON data into an array
+    const jsonArray = JSON.parse(data);
+
+    const bulk = jsonArray.map((review) => ({
+        updateOne: {
+            filter: { user: review.user, product: review.product }, // Use your foreign field for duplicates
+            update: { $set: review },
+            upsert: true, // Insert a new document if no match is found
+        },
+    }));
+
+    // skip the document if it already exists or duplicate field
+    // const options = { ordered: false };
+
+    const reviews = await Review.bulkWrite(bulk);
+
+    res.status(200).json({
+        success: true,
+        data: reviews,
+    });
+});
+
 module.exports = {
     getReviews,
     getProductReviews,
@@ -211,4 +241,5 @@ module.exports = {
     addReview,
     updateReview,
     deleteReview,
+    bulkReviews,
 };

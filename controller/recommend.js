@@ -92,7 +92,9 @@ const getRecommendation = asyncHandler(async (req, res, next) => {
     writeLogs(userId);
 
     // get product list from database with list of product id
-    const productListId = res.data.recommend_items;
+    const productListId = res?.data?.recommend_items?.map(
+        (item) => item[0]
+    );
     const productList = await Product.find({ _id: { $in: productListId } });
 
     // cache the response in Redis for 1 hour
