@@ -17,6 +17,18 @@ const getOrders = asyncHandler(async (req, res, next) => {
     if (req.params.shopId) {
         let orders = await Order.find({ shop: req.params.shopId });
 
+        // skip the order with payment state != cod and currentState != pending
+        orders = orders.filter((order) => {
+            if (
+                order.paymentMethod !== "COD" &&
+                order.paymentState === "Pending"
+            ) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+
         // get all order details by shop id
         let orderDetails = await OrderDetail.find({ shop: req.params.shopId })
             .populate({
