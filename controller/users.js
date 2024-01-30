@@ -7,10 +7,6 @@ const asyncHandler = require("../middleware/async");
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res, next) => {
     const users = res.advancedResults;
-    // let usersData = [];
-    // users.data.forEach((user) => {
-    //     usersData.push(user._id);
-    // });
     res.status(200).json(users);
 });
 

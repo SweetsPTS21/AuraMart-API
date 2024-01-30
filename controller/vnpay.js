@@ -94,7 +94,6 @@ const vnpayReturn = asyncHandler(async (req, res, next) => {
     vnp_Params = sortObject(vnp_Params);
 
     let config = require("config");
-    let tmnCode = config.get("vnp_TmnCode");
     let secretKey = config.get("vnp_HashSecret");
 
     let querystring = require("qs");
@@ -157,17 +156,17 @@ const vnpayIpn = asyncHandler(async (req, res, next) => {
     //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
     //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
 
-    let checkOrderId = vnpay.vnp_TxnRef ? true : false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
-    let checkAmount = vnpay.vnp_Amount ? true : false; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
+    let checkOrderId = !!vnpay.vnp_TxnRef; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
+    let checkAmount = !!vnpay.vnp_Amount; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
 
     if (secureHash === signed) {
         //kiểm tra checksum
         if (checkOrderId) {
             if (checkAmount) {
-                if (paymentStatus == "Pending") {
+                if (paymentStatus === "Pending") {
                     //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
 
-                    if (rspCode == "00") {
+                    if (rspCode === "00") {
                         //thanh cong
                         paymentStatus = "Paid";
 
@@ -256,7 +255,6 @@ const vnpayQueryOrder = asyncHandler(async (req, res, next) => {
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
 
-    let currCode = "VND";
     let vnp_CreateDate = moment(date).format("YYYYMMDDHHmmss");
 
     let data =
@@ -326,8 +324,6 @@ const vnpayRefund = asyncHandler(async (req, res, next) => {
     let vnp_Amount = req.body.amount * 100;
     let vnp_TransactionType = req.body.transType;
     let vnp_CreateBy = req.body.user;
-
-    let currCode = "VND";
 
     let vnp_RequestId = moment(date).format("HHmmss");
     let vnp_Version = "2.1.0";
@@ -412,7 +408,7 @@ function sortObject(obj) {
             str.push(encodeURIComponent(key));
         }
     }
-    str.sort();
+    str.sort((a, b) => a.localeCompare(b));
     for (key = 0; key < str.length; key++) {
         sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(
             /%20/g,

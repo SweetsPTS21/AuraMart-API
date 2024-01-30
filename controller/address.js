@@ -67,7 +67,6 @@ const getAddress = asyncHandler(async (req, res, next) => {
 // @access  Private. One user can create only 1 address
 const addAddress = asyncHandler(async (req, res, next) => {
     req.body.user = req.params.userId;
-    // req.body.address = req.address.id;
 
     const user = await User.findById(req.params.userId);
 

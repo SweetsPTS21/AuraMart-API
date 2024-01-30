@@ -26,7 +26,6 @@ const { getUserAddress, addAddress } = require("../controller/address");
 const { getUserShop } = require("../controller/shops");
 const UserVoucher = require("../models/UserVoucher");
 router.use(protect);
-// router.use(authorize("admin", "user"));
 
 router
     .route("/")

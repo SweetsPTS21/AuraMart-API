@@ -86,7 +86,6 @@ const getTopSoldOfShop = asyncHandler(async (req, res, next) => {
 
 const getShopStatistic = asyncHandler(async (req, res, next) => {
     const shopId = req.params.shopId;
-    const limit = parseInt(req.query.limit || 5);
 
     // statistic for shop with sold quantity, number of orders, number of products, number of reviews
 

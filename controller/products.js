@@ -185,7 +185,7 @@ const updateProduct = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        data: req.body,
+        data: product,
     });
 });
 
@@ -452,8 +452,6 @@ const productPhotoUpload = asyncHandler(async (req, res, next) => {
     } catch (error) {
         console.error("Error uploading file:", error);
         return next(new ErrorResponse(`Problem with file upload`, 500));
-    } finally {
-        // setTimeout(msg, 1);
     }
 });
 

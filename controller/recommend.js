@@ -199,7 +199,7 @@ const writeLogs = async (userId) => {
 
     const logEntry = `[${currentDate}]   from=${ip} method=${method} path="${path}" connect=${connectTime}ms service=${serviceTime}ms status=${status} bytes=${bytes} protocol=${protocol}`;
 
-    await fs.appendFile(logFilePath, logEntry + "\n", (err) => {
+    fs.appendFile(logFilePath, logEntry + "\n", (err) => {
         if (err) {
             console.log("Error writing to log file:", err);
         }

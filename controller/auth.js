@@ -65,7 +65,7 @@ const register = asyncHandler(async (req, res, next) => {
             { username, secret, email, first_name, last_name },
             { headers: { "Private-Key": chatEngineKey } }
         );
-        if (response && response.data) {
+        if (response?.data) {
             const data = {
                 status: response.status,
                 data: response.data,
