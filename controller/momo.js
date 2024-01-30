@@ -5,18 +5,18 @@ const Order = require("../models/Order");
 
 //https://developers.momo.vn/#/docs/en/aiov2/?id=payment-method
 //parameters
-var accessKey = "F8BBA842ECF85";
-var secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
-var partnerCode = "MOMO";
-var redirectUrl = "http://localhost:3000/result";
-var ipnUrl = "https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b";
-var requestType = "payWithMethod";
-var extraData = "";
-var paymentCode =
+let accessKey = "F8BBA842ECF85";
+let secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+let partnerCode = "MOMO";
+let redirectUrl = "http://localhost:3000/result";
+let ipnUrl = "https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c600b";
+let requestType = "payWithMethod";
+let extraData = "";
+let paymentCode =
     "T8Qii53fAXyUftPV3m9ysyRhEanUs9KlOPfHgpMR0ON50U10Bh+vZdpJU7VY4z+Z2y77fJHkoDc69scwwzLuW5MzeUKTwPo3ZMaB29imm6YulqnWfTkgzqRaion+EuD7FN9wZ4aXE1+mRt0gHsU193y+yxtRgpmY7SDMU9hCKoQtYyHsfFR5FUAOAKMdw2fzQqpToei3rnaYvZuYaxolprm9+/+WIETnPUDlxCYOiw7vPeaaYQQH0BF0TxyU3zu36ODx980rJvPAgtJzH1gUrlxcSS1HQeQ9ZaVM1eOK/jl8KJm6ijOwErHGbgf/hVymUQG65rHU2MWz9U8QUjvDWA==";
-var orderGroupId = "";
-var autoCapture = true;
-var lang = "vi";
+let orderGroupId = "";
+let autoCapture = true;
+let lang = "vi";
 
 //before sign HMAC SHA256 with format
 //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
@@ -27,13 +27,13 @@ var lang = "vi";
 // @route   POST /api/v1/payment/momo/create
 // @access  Private
 const momoCreatePayment = asyncHandler(async (req, res, next) => {
-    var amount = "50000";
-    var orderId = partnerCode + new Date().getTime();
-    var requestId = orderId;
-    var order = req.body.order;
-    var orderInfo = req.body.orderInfo;
+    let amount = "50000";
+    let orderId = partnerCode + new Date().getTime();
+    let requestId = orderId;
+    let order = req.body.order;
+    let orderInfo = req.body.orderInfo;
 
-    var rawSignature =
+    let rawSignature =
         "accessKey=" +
         accessKey +
         "&amount=" +
@@ -59,7 +59,7 @@ const momoCreatePayment = asyncHandler(async (req, res, next) => {
     console.log(rawSignature);
     //signature
     const crypto = require("crypto");
-    var signature = crypto
+    let signature = crypto
         .createHmac("sha256", secretKey)
         .update(rawSignature)
         .digest("hex");

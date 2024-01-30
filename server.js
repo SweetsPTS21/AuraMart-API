@@ -12,7 +12,7 @@ const helmet = require("helmet");
 const xss = require("xss-clean");
 const fileupload = require("express-fileupload");
 const path = require("path");
-var favicon = require("serve-favicon");
+let favicon = require("serve-favicon");
 
 // Load env variables
 dotenv.config({ path: "./config/config.env" });
@@ -36,14 +36,6 @@ app.use(helmet());
 
 // prevent xss attacks
 app.use(xss());
-
-// // Serve static files from the 'build' directory
-// app.use(express.static(path.join(__dirname, "build")));
-
-// // Serve 'index.html' for any route
-// app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "build", "index.html"));
-// });
 
 // Rate limit 100 requests per 10 mins
 const limiter = rateLimit({
@@ -72,7 +64,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 // Morgan middleware
-process.env.NODE_ENV === "development" ? app.use(morgan("dev")) : null;
+if (process.env.NODE_ENV === "development") {
+    app.use(morgan("dev"));
+}
 
 // Mount router
 const shops = require("./routes/shops");
